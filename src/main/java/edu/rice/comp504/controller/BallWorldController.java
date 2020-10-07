@@ -2,6 +2,10 @@ package edu.rice.comp504.controller;
 
 import com.google.gson.Gson;
 import edu.rice.comp504.model.DispatchAdapter;
+import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.strategy.RotatingStrategy;
+
+import java.beans.PropertyChangeListener;
 
 import static spark.Spark.*;
 
@@ -14,37 +18,60 @@ public class BallWorldController {
 
     /**
      * The main entry point into the program.
-     * @param args  The program arguments normally specified on the cmd line
+     *
+     * @param args The program arguments normally specified on the cmd line
      */
     public static void main(String[] args) {
         staticFiles.location("/public");
-
+        port(getHerokuAssignedPort());
         Gson gson = new Gson();
         DispatchAdapter dis = new DispatchAdapter();
 
         post("/load", (request, response) -> {
-            return "new ball";
+            Ball ball = dis.loadBall(request.queryParams("strategy"), request.queryParams("switchable"));
+            return gson.toJson(ball);
         });
 
         post("/switch", (request, response) -> {
-            return "switch strategies";
+            PropertyChangeListener[] p = dis.switchStrategy(request.queryParams("id"), request.queryParams("strategy"));
+            return gson.toJson(p);
+        });
+
+        post("/strategy", (request, response) -> {
+            PropertyChangeListener p = dis.findStrategy(request.queryParams("id"));
+            return gson.toJson(p);
         });
 
         get("/update", (request, response) -> {
-            return "update paint world";
+            PropertyChangeListener[] p = dis.updateBallWorld();
+            return gson.toJson(p);
         });
 
         post("/canvas/dims", (request, response) -> {
-            return "set canvas dimensions";
-        });
-
-        get("/remove", (request, response) -> {
-            return "removed some balls in paint world";
+            String dim = request.queryParams("height") + " " + request.queryParams("width");
+            dis.setCanvasDims(dim);
+            return gson.toJson(dim);
         });
 
         get("/clear", (request, response) -> {
-            return "removed all balls in paint world";
+            dis.removeListeners();
+            ((RotatingStrategy) RotatingStrategy.makeStrategy()).clear();
+            return gson.toJson("remove");
         });
 
+    }
+
+    /**
+     * Configuration on port.
+     *
+     * @return default port if heroku-port isn't set (i.e. on localhost)
+     */
+
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567;
     }
 }

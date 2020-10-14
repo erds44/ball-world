@@ -50,8 +50,8 @@ public class NullStrategy implements IUpdateStrategy {
         if (context.getColor() != "black") {
             context.setColor("black");
         }
-        if(context.getVelocity().x != 0 || context.getVelocity().y != 0){
-            context.setVelocity(new Point(0,0));
+        if (context.getVelocity().x != 0 || context.getVelocity().y != 0) {
+            context.setVelocity(new Point(0, 0));
         }
         return false;
     }

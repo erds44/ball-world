@@ -5,7 +5,6 @@ import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.ball.Ball;
 import edu.rice.comp504.model.strategy.RotatingStrategy;
 
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 
 import static spark.Spark.*;
@@ -55,7 +54,7 @@ public class BallWorldController {
         });
 
         get("/clear", (request, response) -> {
-            dis.RemoveBalls(-1);
+            dis.removeBalls(-1);
             ((RotatingStrategy) RotatingStrategy.makeStrategy()).clear();
             return gson.toJson("remove");
         });

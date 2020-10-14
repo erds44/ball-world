@@ -19,7 +19,7 @@ public class Ball {
     private boolean switchable;
     private int id;
     private int count;  // number of collision such that an event can tell if there is any other collision happening before it.
-
+    public double mass;
 
     /**
      * Constructor.
@@ -41,6 +41,7 @@ public class Ball {
         this.strategy.updateState(this);
         this.id = id;
         this.count = 0;
+        this.mass = 1;
     }
 
     /**
@@ -146,8 +147,8 @@ public class Ball {
         if (switchable) {
             if (this.strategy.getName().equals("RotatingStrategy")) {
                 ((RotatingStrategy) this.strategy).notRotating(this.getID());
-            }else if(this.strategy.getName().equals("NullStrategy")){ // give some random velocity if switching from null
-                this.setVelocity(new Point(DispatchAdapter.getRnd(10,40), DispatchAdapter.getRnd(10,40)));
+            } else if (this.strategy.getName().equals("NullStrategy")) { // give some random velocity if switching from null
+                this.setVelocity(new Point(DispatchAdapter.getRnd(10, 40), DispatchAdapter.getRnd(10, 40)));
             }
             this.strategy = strategy;
         }
@@ -224,6 +225,16 @@ public class Ball {
     }
 
     /**
+     * Update ball location based on the current velocity.
+     */
+    public void updateLocation(double time) {
+        double x = this.getLocation().x + this.getVelocity().x * time;
+        double y = this.getLocation().y + this.getVelocity().y * time;
+
+        this.setLocation(new Point((int) x, (int) y));
+    }
+
+    /**
      * Returns the amount of time to collide with a vertical
      * wall, assuming no intermediate collisions.
      *
@@ -234,10 +245,10 @@ public class Ball {
         double locX = this.getLocation().x;
         int r = this.getRadius();
         if (vx > 0) {
-            return (1.0 * DispatchAdapter.getCanvasDims().x - locX - r) / vx;
+            return (1d * DispatchAdapter.getCanvasDims().x - locX - r) / vx;
         } else if (vx < 0) {
             // notice vx is negative
-            return (1.0 * r - locX) / vx;
+            return (1d * r - locX) / vx;
         } else {
             return INFINITY;
         }
@@ -254,9 +265,9 @@ public class Ball {
         double locY = this.getLocation().y;
         int r = this.getRadius();
         if (vy > 0) {
-            return (1.0 * DispatchAdapter.getCanvasDims().y - locY - r) / vy;
+            return (1d * DispatchAdapter.getCanvasDims().y - locY - r) / vy;
         } else if (vy < 0) {
-            return (1.0 * r - locY) / vy;
+            return (1d * r - locY) / vy;
         } else {
             return INFINITY;
         }
@@ -273,7 +284,7 @@ public class Ball {
     }
 
     /**
-     * Updates the velocity of this particle upon collision with a horizontal wall
+     * Updates the velocity of this particle upon collision with a horizontal wall.
      */
     public void bounceOffHorizontalWall() {
         detectCollision();
@@ -292,14 +303,88 @@ public class Ball {
         return this.count;
     }
 
-    public void incrementCount(){
+    public void incrementCount() {
         this.count++;
     }
 
-    public void updateLocation(double time) {
-        double locX = this.getVelocity().x * time + this.getLocation().x;
-        double locY = this.getVelocity().y * time + this.getLocation().y;
-        this.setLocation(new Point((int) locX, (int) locY));
+    /**
+     * Returns the amount of time for this particle to collide with the specified particle, assuming no interening collisions.
+     *
+     * @param b the other particle
+     * @return the amount of time for this particle to collide with the specified particle, assuming no interening collisions;
+     * {@code Double.POSITIVE_INFINITY} if the particles will not collide
+     */
+    public double timeToHit(Ball b) {
+        if (this == b) {
+            return INFINITY;
+        }
+        double dx = b.getLocation().x - this.getLocation().x;
+        double dy = b.getLocation().y - this.getLocation().y;
+        double dvx = b.getVelocity().x - this.getVelocity().x;
+        double dvy = b.getVelocity().y - this.getVelocity().y;
+        double dvdr = dx * dvx + dy * dvy;
+        if (dvdr > 0) {
+            return INFINITY;
+        }
+        double dvdv = dvx * dvx + dvy * dvy;
+        if (dvdv == 0) {
+            return INFINITY;
+        }
+        double drdr = dx * dx + dy * dy;
+        double sigma = this.radius + b.radius;
+        double d = (dvdr * dvdr) - dvdv * (drdr - sigma * sigma);
+        if (d < 0) {
+            return INFINITY;
+        }
+        return -(dvdr + Math.sqrt(d)) / dvdv;
+    }
+
+    /**
+     * Updates the velocities of this particle and the specified particle according
+     * to the laws of elastic collision. Assumes that the particles are colliding
+     * at this instant.
+     *
+     * @param b the other particle
+     */
+    public void bounceOff(Ball b) {
+//        this.updateLocation(time);
+//        b.updateLocation(time);
+
+
+        double dx = b.getLocation().x - this.getLocation().x;
+        double dy = b.getLocation().y - this.getLocation().y;
+        double dvx = b.getVelocity().x - this.getVelocity().x;
+        double dvy = b.getVelocity().y - this.getVelocity().y;
+        double dvdr = dx * dvx + dy * dvy;             // dv dot dr
+        double dist = this.getRadius() + b.getRadius();   // distance between particle centers at collison
+
+        // magnitude of normal force
+        double magnitude = 2 * this.mass * b.mass * dvdr / ((this.mass + b.mass) * dist);
+
+        // normal force, and in x and y directions
+        double fx = magnitude * dx / dist;
+        double fy = magnitude * dy / dist;
+
+        // update velocities according to normal force
+        double vx = this.getVelocity().x;
+        double vy = this.getVelocity().y;
+        double vbx = b.getVelocity().x;
+        double vby = b.getVelocity().y;
+
+
+        vx += fx / this.mass;
+        vy += fy / this.mass;
+        vbx -= fx / b.mass;
+        vby -= fy / b.mass;
+
+        this.setVelocity(new Point((int) vx, (int) vy));
+        b.setVelocity(new Point((int) vbx, (int) vby));
+//
+//        this.setVelocity(new Point(-this.getVelocity().x, -this.getVelocity().y));
+//        b.setVelocity(new Point(-b.getVelocity().x, -b.getVelocity().y));
+//        // update collision counts
+        this.incrementCount();
+        b.incrementCount();
     }
 
 

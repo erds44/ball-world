@@ -38,6 +38,7 @@ function createApp(canvas) {
             c.textAlign = "center"
             c.fillText(id, x, y);
         }
+
     };
 
     let clear = function () {

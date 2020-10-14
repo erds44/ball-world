@@ -48,8 +48,8 @@ public class StraightStrategy implements IUpdateStrategy {
     @Override
     public boolean updateState(Ball context) {
         Boolean b = context.getVelocity().x == context.getVelocity().y;
-        if(!b){
-            context.setVelocity(new Point(context.getVelocity().x,context.getVelocity().y));
+        if (!b) {
+            context.setVelocity(new Point(context.getVelocity().x, context.getVelocity().y));
         }
         return b;
     }

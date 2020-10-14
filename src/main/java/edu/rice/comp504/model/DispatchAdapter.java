@@ -5,7 +5,6 @@ import edu.rice.comp504.model.cmd.SwitchCmd;
 import edu.rice.comp504.model.strategy.*;
 
 import java.awt.*;
-import java.beans.PropertyChangeListener;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.Map;
  * This adapter interfaces with the view (paint objects) and the controller.
  */
 public class DispatchAdapter {
-    public int time; // time unit is 0.1s
     private int ballID = 0;
     public static Point dims;
     public static String[] availColors = {"red", "blue", "green", "black", "purple", "orange", "gray", "brown"};
@@ -72,14 +70,15 @@ public class DispatchAdapter {
         int r = getRnd(15, 15);
         int locX = getRnd(r, DispatchAdapter.dims.x - 2 * r);
         int locY = getRnd(r, DispatchAdapter.dims.y - 2 * r);
-        int velX = getRnd(10, 40);
-        int velY = getRnd(10, 40);
+        int velX = getRnd(10, 10);
+        int velY = getRnd(10, 10);
         int colorIndex = getRnd(0, this.availColors.length);
         IUpdateStrategy s = this.map.get(body);
         // In case a strategy is not in the dictionary
         if (s == null) {
             s = NullStrategy.makeStrategy();
         }
+        //Ball ball = new Ball(new Point(this.loc[this.index++], 400), r, new Point(velX, 0), this.availColors[colorIndex], Boolean.parseBoolean(switchable), s, ++this.ballID);
         Ball ball = new Ball(new Point(locX, locY), r, new Point(velX, velY), this.availColors[colorIndex], Boolean.parseBoolean(switchable), s, ++this.ballID);
         this.newBalls.put(this.ballID, ball);
         return ball;
@@ -89,14 +88,13 @@ public class DispatchAdapter {
      * Call the update method on all the ball observers to update their position in the ball world.
      */
     public Collection<Ball> updateBallWorld() {
-        this.time++;
         Collection<Ball> balls = this.balls.values();
-        for (Ball ball : this.newBalls.values()) {
-            CollisionSystem.makeOnly().predict(balls, ball, this.time);
-        }
         this.balls.putAll(this.newBalls);
+        for (Ball ball : this.newBalls.values()) {
+            CollisionSystem.makeOnly().predict(balls, ball);
+        }
         this.newBalls.clear();
-        CollisionSystem.makeOnly().update(balls, this.time);
+        CollisionSystem.makeOnly().update(balls);
         return balls;
     }
 
@@ -120,10 +118,12 @@ public class DispatchAdapter {
      */
     public Collection<Ball> switchStrategy(String id, String strategy) {
         IUpdateStrategy s = this.map.get(strategy);
-        if (s == null) s = NullStrategy.makeStrategy();
+        if (s == null) {
+            s = NullStrategy.makeStrategy();
+        }
         Ball ball = this.balls.get(Integer.parseInt(id));
         new SwitchCmd(s).execute(ball);
-        CollisionSystem.makeOnly().predict(this.balls.values(), ball, this.time);
+        CollisionSystem.makeOnly().predict(this.balls.values(), ball);
         return this.balls.values();
     }
 
@@ -141,11 +141,11 @@ public class DispatchAdapter {
     /**
      * Remove all balls from listening for property change events for a particular property.
      */
-    public void RemoveBalls(int id) {
+    public void removeBalls(int id) {
         if (id == -1) {
             this.newBalls.clear();
             this.balls.clear();
-            CollisionSystem.makeOnly().Clear();
+            CollisionSystem.makeOnly().clear();
             this.ballID = 0;
         } else {
             Ball ball = this.balls.remove(id);

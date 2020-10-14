@@ -12,14 +12,21 @@ import java.util.PriorityQueue;
 public class CollisionSystem {
     private static CollisionSystem singleton;
     private PriorityQueue<Event> minPQ;
+    private double time;
 
     /**
      * private constructor for singleton pattern.
      */
     private CollisionSystem() {
         this.minPQ = new PriorityQueue<>();
+        time = 0;
     }
 
+    /**
+     * singleton pattern.
+     *
+     * @return singleton
+     */
 
     public static CollisionSystem makeOnly() {
         if (singleton == null) {
@@ -28,49 +35,67 @@ public class CollisionSystem {
         return singleton;
     }
 
+    /**
+     * Predict future collision events.
+     *
+     * @param balls all balls in canvas
+     * @param a     the ball to check collision
+     */
     // updates priority queue with all new events for ball a
-    public void predict(Collection<Ball> balls, Ball a, double time) {
-        if (a == null) return;
-
-//        // particle-particle collisions
-//        for (int i = 0; i < balls.length; i++) {
-//            double dt = a.timeToHit(particles[i]);
-//            if (t + dt <= limit)
-//                pq.insert(new Event(t + dt, a, particles[i]));
-//        }
-
-        // particle-wall collisions
+    public void predict(Collection<Ball> balls, Ball a) {
+        if (a == null) {
+            return;
+        }
+        // ball - ball collisions
+        for (Ball ball : balls) {
+            double dt = a.timeToHit(ball);
+            this.minPQ.add(new Event(time + dt, a, ball));
+            //System.out.println("At time: "+ time + "   " + (dt + time));
+        }
+        // ball - wall collisions
         double dtX = a.timeToHitVerticalWall();
         double dtY = a.timeToHitHorizontalWall();
         this.minPQ.add(new Event(time + dtX, a, null));
         this.minPQ.add(new Event(time + dtY, null, a));
-        //System.out.println("At time: "+ time + "   " + dtX + " " + dtY);
     }
 
     /**
      * Simulates the system of particles for the specified amount of time.
      */
-    public void update(Collection<Ball> balls, int time) {
-        updateBalls(balls, time);
-        //System.out.println(time);
-        if (!this.minPQ.isEmpty()) {
-            // get impending event, discard if invalidated
-
-            Event e = this.minPQ.peek();
-            //System.out.println("C: " + e.getTime());
-            while (e.getTime() < (time + 1)) {
-                this.minPQ.poll();
-                if (e.isValidCollision()) {
-                    e.resolveCollision();
-                    predict(balls, e.getA(), time + 1);
-                    predict(balls, e.getB(), time + 1);
+    public synchronized void update(Collection<Ball> balls) {
+        double limit = this.time + 1;
+        //updateBalls(balls);
+        // get impending event, discard if invalidated
+        //System.out.println("C: " + e.getTime());
+        Event e = this.minPQ.peek();
+        while (e != null && e.getTime() <= limit) {
+            e = this.minPQ.poll();
+            if (e.isValidCollision()) {
+                for (Ball ball : balls) {
+                    ball.updateLocation(e.getTime() - time);
                 }
-                e = this.minPQ.peek();
+                time = e.getTime();
+                Ball a = e.getA();
+                Ball b = e.getB();
+                if (a != null && b != null) {
+                    a.bounceOff(b);              // particle-particle collision
+                } else if (a != null && b == null) {
+                    a.bounceOffVerticalWall();   // particle-wall collision
+                } else if (a == null && b != null) {
+                    b.bounceOffHorizontalWall(); // particle-wall collision
+                }
+                predict(balls, e.getA());
+                predict(balls, e.getB());
             }
+            e = this.minPQ.peek();
         }
+        for (Ball ball : balls) {
+            ball.updateLocation(limit - time);
+        }
+        this.time = limit;
     }
 
-    private void updateBalls(Collection<Ball> balls, int time) {
+    private void updateBalls(Collection<Ball> balls) {
         for (Ball ball : balls) {
             switch (ball.getStrategy().getName()) {
                 case "ChangeColorAfterCollisionStrategy":
@@ -82,13 +107,20 @@ public class CollisionSystem {
                 default:
                     boolean b = ball.getStrategy().updateState(ball);
                     ball.updateLocation();
-                    if (b) predict(balls, ball, time);
+                    if (b) {
+                        predict(balls, ball);
+                    }
             }
         }
     }
 
-    public void Clear(){
+    public void clear() {
         this.minPQ.clear();
+        this.time = 0;
+    }
+
+    public double getTime() {
+        return this.time;
     }
 
 }

@@ -18,7 +18,7 @@ public class DispatchAdapterTest extends TestCase {
         for (String strategy : this.strategies) {
             testBall(strategy);
         }
-        this.da.removeListeners();
+        this.da.RemoveBalls(-1);
     }
 
     /**
@@ -30,7 +30,7 @@ public class DispatchAdapterTest extends TestCase {
             switchBall(strategy, "true");
             switchBall(strategy, "false");
         }
-        this.da.removeListeners();
+        this.da.RemoveBalls(-1);
     }
 
     /**
@@ -40,8 +40,8 @@ public class DispatchAdapterTest extends TestCase {
         int pass = 11;
         for (int i = 1; i < pass; i++) {
             createBall(i);
-            this.da.removeListeners();
-            assertEquals("Test remove ball", 0, this.da.updateBallWorld().length);
+            this.da.RemoveBalls(-1);
+            assertEquals("Test remove ball", 0, this.da.updateBallWorld().size());
         }
     }
 

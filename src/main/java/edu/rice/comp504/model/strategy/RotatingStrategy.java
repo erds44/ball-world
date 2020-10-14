@@ -94,7 +94,7 @@ public class RotatingStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public void updateState(Ball context) {
+    public boolean updateState(Ball context) {
         if (!this.idToBool.containsKey(context.getID())) {
             this.idToLoc.put(context.getID(), this.adjustLoc(context));
             this.idToBool.put(context.getID(), true);
@@ -108,5 +108,6 @@ public class RotatingStrategy implements IUpdateStrategy {
         double rotatedX = Math.cos(rotateAngle) * (dx) - Math.sin(rotateAngle) * (dy) + loc.x;
         double rotatedY = Math.sin(rotateAngle) * (dx) + Math.cos(rotateAngle) * (dy) + loc.y;
         context.setLocation(new Point((int) rotatedX, (int) rotatedY));
+        return false;
     }
 }

@@ -17,6 +17,7 @@ public interface IUpdateStrategy {
      * Update the state of the ball.
      *
      * @param context The ball.
+     * @return if the strategy change's ball's internal state randomly.
      */
-    void updateState(Ball context);
+    boolean updateState(Ball context);
 }

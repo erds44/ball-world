@@ -49,10 +49,9 @@ public class GravityStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public void updateState(Ball context) {
+    public boolean updateState(Ball context) {
         context.setVelocity(new Point(context.getVelocity().x, context.getVelocity().y + this.gravity));
-        context.updateLocation();
-        context.detectCollision();
-
+        context.incrementCount();
+        return true;
     }
 }

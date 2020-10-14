@@ -47,9 +47,9 @@ public class ChangeSizeStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public void updateState(Ball context) {
-        context.setRadius(DispatchAdapter.getRnd(10, 40));
-        context.updateLocation();
-        context.detectCollision();
+    public boolean updateState(Ball context) {
+        context.setRadius(DispatchAdapter.getRnd(15, 15));
+        context.incrementCount();
+        return true;
     }
 }

@@ -47,12 +47,10 @@ public class ChangeColorAfterCollisionStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public void updateState(Ball context) {
-        context.updateLocation();
-        if (context.detectCollision()) {
-            int colorIndex = Arrays.asList(DispatchAdapter.availColors).indexOf(context.getColor());
-            colorIndex = ++colorIndex % DispatchAdapter.availColors.length;
-            context.setColor(DispatchAdapter.availColors[colorIndex]);
-        }
+    public boolean updateState(Ball context) {
+        int colorIndex = Arrays.asList(DispatchAdapter.availColors).indexOf(context.getColor());
+        colorIndex = ++colorIndex % DispatchAdapter.availColors.length;
+        context.setColor(DispatchAdapter.availColors[colorIndex]);
+        return false;
     }
 }

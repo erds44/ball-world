@@ -1,21 +1,16 @@
 package edu.rice.comp504.model.ball;
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.cmd.SwitchCmd;
-import edu.rice.comp504.model.cmd.UpdateCmd;
-import edu.rice.comp504.model.strategy.HorizontalStrategy;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
 import edu.rice.comp504.model.strategy.RotatingStrategy;
-import edu.rice.comp504.model.strategy.SuddenStopStrategy;
 
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  * The balls that will be drawn in the ball world.
  */
-public class Ball implements PropertyChangeListener {
+public class Ball {
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
     private Point loc;
     private int radius;
     private Point vel;
@@ -23,6 +18,8 @@ public class Ball implements PropertyChangeListener {
     private String color;
     private boolean switchable;
     private int id;
+    private int count;  // number of collision such that an event can tell if there is any other collision happening before it.
+
 
     /**
      * Constructor.
@@ -43,6 +40,7 @@ public class Ball implements PropertyChangeListener {
         this.strategy = strategy;
         this.strategy.updateState(this);
         this.id = id;
+        this.count = 0;
     }
 
     /**
@@ -148,6 +146,8 @@ public class Ball implements PropertyChangeListener {
         if (switchable) {
             if (this.strategy.getName().equals("RotatingStrategy")) {
                 ((RotatingStrategy) this.strategy).notRotating(this.getID());
+            }else if(this.strategy.getName().equals("NullStrategy")){ // give some random velocity if switching from null
+                this.setVelocity(new Point(DispatchAdapter.getRnd(10,40), DispatchAdapter.getRnd(10,40)));
             }
             this.strategy = strategy;
         }
@@ -212,7 +212,7 @@ public class Ball implements PropertyChangeListener {
             isCollided = true;
         }
         this.setLocation(new Point(x, y));
-        this.setVelocity(new Point(dx, dy));
+        //this.setVelocity(new Point(dx, dy));
         return isCollided;
     }
 
@@ -223,15 +223,84 @@ public class Ball implements PropertyChangeListener {
         this.setLocation(new Point(this.getVelocity().x + this.getLocation().x, this.getVelocity().y + this.getLocation().y));
     }
 
-    @Override
     /**
-     *  Ball responds to the property change support indicating that the a property has changed.
+     * Returns the amount of time to collide with a vertical
+     * wall, assuming no intermediate collisions.
+     *
+     * @return the amount of time for this particle to collide with a vertical wall
      */
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals("theClock")) {
-            ((UpdateCmd) evt.getNewValue()).execute(this);
+    public double timeToHitVerticalWall() {
+        double vx = this.getVelocity().x;
+        double locX = this.getLocation().x;
+        int r = this.getRadius();
+        if (vx > 0) {
+            return (1.0 * DispatchAdapter.getCanvasDims().x - locX - r) / vx;
+        } else if (vx < 0) {
+            // notice vx is negative
+            return (1.0 * r - locX) / vx;
         } else {
-            ((SwitchCmd) evt.getNewValue()).execute(this);
+            return INFINITY;
         }
     }
+
+    /**
+     * Returns the amount of time for this particle to collide with a horizontal
+     * wall, assuming no intermediate collisions.
+     *
+     * @return the amount of time for this particle to collide with a horizontal wall
+     */
+    public double timeToHitHorizontalWall() {
+        double vy = this.getVelocity().y;
+        double locY = this.getLocation().y;
+        int r = this.getRadius();
+        if (vy > 0) {
+            return (1.0 * DispatchAdapter.getCanvasDims().y - locY - r) / vy;
+        } else if (vy < 0) {
+            return (1.0 * r - locY) / vy;
+        } else {
+            return INFINITY;
+        }
+    }
+
+    /**
+     * Updates the velocity of this particle upon collision with a vertical wall.
+     */
+    public void bounceOffVerticalWall() {
+        detectCollision();
+        int vx = this.getVelocity().x;
+        this.setVelocity(new Point(-vx, this.getVelocity().y));
+        this.count++;
+    }
+
+    /**
+     * Updates the velocity of this particle upon collision with a horizontal wall
+     */
+    public void bounceOffHorizontalWall() {
+        detectCollision();
+        int vy = this.getVelocity().y;
+        this.setVelocity(new Point(this.getVelocity().x, -vy));
+        this.count++;
+    }
+
+    /**
+     * Returns the number of collisions involving this particle with
+     * vertical walls, horizontal walls, or other balls.
+     *
+     * @return the number of collisions.
+     */
+    public int count() {
+        return this.count;
+    }
+
+    public void incrementCount(){
+        this.count++;
+    }
+
+    public void updateLocation(double time) {
+        double locX = this.getVelocity().x * time + this.getLocation().x;
+        double locY = this.getVelocity().y * time + this.getLocation().y;
+        this.setLocation(new Point((int) locX, (int) locY));
+    }
+
+
 }

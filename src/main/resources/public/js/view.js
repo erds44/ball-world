@@ -7,9 +7,9 @@ var app;
 let intervalID;
 
 // all strategies
-const strategies = ["HorizontalStrategy", "ChangeColorStrategy", "ChangeSizeStrategy",
-    "GravityStrategy", "RandomLocationStrategy", "ShakingStrategy", "ChangeColorAfterCollisionStrategy",
-    "SuddenStopStrategy", "ChangeVelocityAfterCollisionStrategy", "NullStrategy", "RotatingStrategy"];
+const strategies = ["StraightStrategy", "ChangeColorStrategy", "ChangeSizeStrategy",
+    "GravityStrategy", "ShakingStrategy", "ChangeColorAfterCollisionStrategy",
+    "NullStrategy", "RotatingStrategy"];
 
 /**
  * Create the ball world app for a canvas
@@ -138,7 +138,7 @@ function updateBallWorld() {
     $.get("/update", function (data) {
         app.clear();
         data.forEach(function (element) {
-            element = element.listener;
+            //element = element.listener;
             app.drawCircle(element.loc.x, element.loc.y, element.radius, element.color, element.id);
         });
     }, "json");

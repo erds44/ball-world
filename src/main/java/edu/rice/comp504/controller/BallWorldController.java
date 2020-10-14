@@ -6,6 +6,7 @@ import edu.rice.comp504.model.ball.Ball;
 import edu.rice.comp504.model.strategy.RotatingStrategy;
 
 import java.beans.PropertyChangeListener;
+import java.util.Collection;
 
 import static spark.Spark.*;
 
@@ -33,17 +34,17 @@ public class BallWorldController {
         });
 
         post("/switch", (request, response) -> {
-            PropertyChangeListener[] p = dis.switchStrategy(request.queryParams("id"), request.queryParams("strategy"));
-            return gson.toJson(p);
+            Collection<Ball> balls = dis.switchStrategy(request.queryParams("id"), request.queryParams("strategy"));
+            return gson.toJson(balls);
         });
 
         post("/strategy", (request, response) -> {
-            PropertyChangeListener p = dis.findStrategy(request.queryParams("id"));
-            return gson.toJson(p);
+            Ball b = dis.findStrategy(request.queryParams("id"));
+            return gson.toJson(b);
         });
 
         get("/update", (request, response) -> {
-            PropertyChangeListener[] p = dis.updateBallWorld();
+            Collection<Ball> p = dis.updateBallWorld();
             return gson.toJson(p);
         });
 
@@ -54,7 +55,7 @@ public class BallWorldController {
         });
 
         get("/clear", (request, response) -> {
-            dis.removeListeners();
+            dis.RemoveBalls(-1);
             ((RotatingStrategy) RotatingStrategy.makeStrategy()).clear();
             return gson.toJson("remove");
         });

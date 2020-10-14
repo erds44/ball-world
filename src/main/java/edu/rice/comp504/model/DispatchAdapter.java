@@ -2,12 +2,11 @@ package edu.rice.comp504.model;
 
 import edu.rice.comp504.model.ball.Ball;
 import edu.rice.comp504.model.cmd.SwitchCmd;
-import edu.rice.comp504.model.cmd.UpdateCmd;
 import edu.rice.comp504.model.strategy.*;
 
 import java.awt.*;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,32 +14,29 @@ import java.util.Map;
  * This adapter interfaces with the view (paint objects) and the controller.
  */
 public class DispatchAdapter {
-    private PropertyChangeSupport pcs;
+    public int time; // time unit is 0.1s
+    private int ballID = 0;
     public static Point dims;
     public static String[] availColors = {"red", "blue", "green", "black", "purple", "orange", "gray", "brown"};
+    private Map<Integer, Ball> balls = new HashMap<>();
+    private Map<Integer, Ball> newBalls = new HashMap<>();
     public static Map<String, IUpdateStrategy> map = new HashMap<>();
 
     {
-        map.put("HorizontalStrategy", HorizontalStrategy.makeStrategy());
+        map.put("StraightStrategy", StraightStrategy.makeStrategy());
         map.put("ChangeColorStrategy", ChangeColorStrategy.makeStrategy());
         map.put("ChangeSizeStrategy", ChangeSizeStrategy.makeStrategy());
         map.put("GravityStrategy", GravityStrategy.makeStrategy());
-        map.put("RandomLocationStrategy", RandomLocationStrategy.makeStrategy());
         map.put("ShakingStrategy", ShakingStrategy.makeStrategy());
         map.put("ChangeColorAfterCollisionStrategy", ChangeColorAfterCollisionStrategy.makeStrategy());
-        map.put("SuddenStopStrategy", SuddenStopStrategy.makeStrategy());
-        map.put("ChangeVelocityAfterCollisionStrategy", ChangeVelocityAfterCollisionStrategy.makeStrategy());
         map.put("NullStrategy", NullStrategy.makeStrategy());
         map.put("RotatingStrategy", RotatingStrategy.makeStrategy());
     }
-
-    private int ballID = 0;
 
     /**
      * Constructor call.
      */
     public DispatchAdapter() {
-        pcs = new PropertyChangeSupport(this);
     }
 
     /**
@@ -67,14 +63,42 @@ public class DispatchAdapter {
     }
 
     /**
-     * Call the update method on all the ball observers to update their position in the ball world.
+     * Load a ball into the paint world.
+     *
+     * @param body The REST request body has the strategy names.
+     * @return A paint object
      */
-    public PropertyChangeListener[] updateBallWorld() {
-        PropertyChangeListener[] pcl = pcs.getPropertyChangeListeners();
-        pcs.firePropertyChange("theClock", null, UpdateCmd.makeStrategy());
-        return pcl;
+    public Ball loadBall(String body, String switchable) {
+        int r = getRnd(15, 15);
+        int locX = getRnd(r, DispatchAdapter.dims.x - 2 * r);
+        int locY = getRnd(r, DispatchAdapter.dims.y - 2 * r);
+        int velX = getRnd(10, 40);
+        int velY = getRnd(10, 40);
+        int colorIndex = getRnd(0, this.availColors.length);
+        IUpdateStrategy s = this.map.get(body);
+        // In case a strategy is not in the dictionary
+        if (s == null) {
+            s = NullStrategy.makeStrategy();
+        }
+        Ball ball = new Ball(new Point(locX, locY), r, new Point(velX, velY), this.availColors[colorIndex], Boolean.parseBoolean(switchable), s, ++this.ballID);
+        this.newBalls.put(this.ballID, ball);
+        return ball;
     }
 
+    /**
+     * Call the update method on all the ball observers to update their position in the ball world.
+     */
+    public Collection<Ball> updateBallWorld() {
+        this.time++;
+        Collection<Ball> balls = this.balls.values();
+        for (Ball ball : this.newBalls.values()) {
+            CollisionSystem.makeOnly().predict(balls, ball, this.time);
+        }
+        this.balls.putAll(this.newBalls);
+        this.newBalls.clear();
+        CollisionSystem.makeOnly().update(balls, this.time);
+        return balls;
+    }
 
     /**
      * Generate a random number.
@@ -87,30 +111,6 @@ public class DispatchAdapter {
         return (int) Math.floor(Math.random() * limit + base);
     }
 
-    /**
-     * Load a ball into the paint world.
-     *
-     * @param body The REST request body has the strategy names.
-     * @return A paint object
-     */
-    public Ball loadBall(String body, String switchable) {
-        int r = getRnd(10, 40);
-        int locX = getRnd(r, DispatchAdapter.dims.x - 2 * r);
-        int locY = getRnd(r, DispatchAdapter.dims.y - 2 * r);
-        int velX = getRnd(10, 40);
-        int velY = getRnd(10, 40);
-        int colorIndex = getRnd(0, this.availColors.length);
-        IUpdateStrategy s = this.map.get(body);
-        // In case a strategy is not in the dictionary
-        if (s == null) {
-            s = NullStrategy.makeStrategy();
-        }
-        Ball ball = new Ball(new Point(locX, locY), r, new Point(velX, velY), this.availColors[colorIndex], Boolean.parseBoolean(switchable), s, ++this.ballID);
-        addListener(ball, "theClock");
-        addListener(ball, String.valueOf(this.ballID));
-        return ball;
-    }
-
 
     /**
      * Switch the strategy for some of the switcher balls.
@@ -118,43 +118,39 @@ public class DispatchAdapter {
      * @param id       Ball id
      * @param strategy strategy to change for the ball
      */
-    public PropertyChangeListener[] switchStrategy(String id, String strategy) {
+    public Collection<Ball> switchStrategy(String id, String strategy) {
         IUpdateStrategy s = this.map.get(strategy);
-        if (s == null) {
-            s = NullStrategy.makeStrategy();
-        }
-        pcs.firePropertyChange(id, null, new SwitchCmd(s));
-        return this.pcs.getPropertyChangeListeners(id);
+        if (s == null) s = NullStrategy.makeStrategy();
+        Ball ball = this.balls.get(Integer.parseInt(id));
+        new SwitchCmd(s).execute(ball);
+        CollisionSystem.makeOnly().predict(this.balls.values(), ball, this.time);
+        return this.balls.values();
     }
 
     /**
      * Find the ball given the ball id.
      *
-     * @param body The REST request body of ball id
+     * @param id The REST request body of ball id
      * @return the ball with corresponding id
      */
-    public PropertyChangeListener findStrategy(String body) {
-        return this.pcs.getPropertyChangeListeners(body)[0];
+    public Ball findStrategy(String id) {
+        return this.balls.get(Integer.parseInt(id));
     }
 
-    /**
-     * Add a ball that will listen for a property change (i.e. time elapsed)
-     *
-     * @param pcl  The ball
-     * @param type Trigger type
-     */
-    private void addListener(PropertyChangeListener pcl, String type) {
-        this.pcs.addPropertyChangeListener(type, pcl);
-    }
 
     /**
      * Remove all balls from listening for property change events for a particular property.
      */
-    public void removeListeners() {
-        for (PropertyChangeListener pcl : pcs.getPropertyChangeListeners()) {
-            this.pcs.removePropertyChangeListener(pcl);
+    public void RemoveBalls(int id) {
+        if (id == -1) {
+            this.newBalls.clear();
+            this.balls.clear();
+            CollisionSystem.makeOnly().Clear();
+            this.ballID = 0;
+        } else {
+            Ball ball = this.balls.remove(id);
+            ball.incrementCount(); // invalidate time event
         }
-        this.ballID = 0;
     }
 
 }

@@ -7,48 +7,47 @@
     <script src="js/view.js"></script>
 </head>
 <body>
-    <div style="top:3em; left:0em;">
-        <div>
-            <canvas width="800" height="800" style="border: 1px solid #000000 ;display:block;margin:auto"></canvas>
-        </div>
-        <div style="display: flex; justify-content: center;margin-top: 20px;">
-            <select id="switchable">
-                <option value = "true">Switchable</option>
-                <option value = "false">Nonswitchable</option>
-            </select>
-            <select id="strategy">
-                <option value="NullStrategy">Null Strategy - black color and 0 velocity</option>
-                <option value="HorizontalStrategy">Straight Strategy - move horizontally</option>
-                <option value="GravityStrategy">Gravity Strategy - gravity in positive Y direction</option>
-                <option value="ChangeSizeStrategy">Change Size Strategy - random size every update</option>
-                <option value="ChangeColorStrategy">Change Color Strategy - random color every update</option>
-                <option value="ShakingStrategy">Shaking Strategy - move up and down while moving horizontally</option>
-                <option value="RandomLocationStrategy">Random Location Strategy - random location every update</option>
-                <option value="SuddenStopStrategy">Sudden Stop Strategy - have chances to stop moving every update</option>
-                <option value="ChangeColorAfterCollisionStrategy">Change Color After Collision Strategy - change color after collision with a wall</option>
-                <option value="ChangeVelocityAfterCollisionStrategy">Change Velocity After Collision Strategy - change velocity after collision with a wall</option>
-                <option value="RotatingStrategy">Rotating Strategy - rotate around a fixed point</option>
-
-
-            </select>
-            <button id="btn-load">Make Ball</button>
-            <button id="btn-clear">Clear</button>
-        </div>
-        <div style="display: flex; justify-content: center;margin-top: 10px;">
-            <b>It might take seconds for switch strategy to be effective due to heroku lag</b>
-        </div>
-        <div style="display: flex; justify-content: center;margin-top: 10px;">
-            <select id="switchableBalls">
-                <option value ="balls">--- Balls ---</option>
-            </select>
-            <select id="availableStrategy">
-                <option value ="availableStrategy">--- Available Strategies ---</option>
-            </select>
-            <button id="btn-switchStrategy" disabled>Switch Strategy</button>
-        </div>
-
-
+<div style="top:3em; left:0em;">
+    <div>
+        <canvas width="800" height="800" style="border: 1px solid #000000 ;display:block;margin:auto"></canvas>
     </div>
+    <div style="display: flex; justify-content: center;margin-top: 20px;">
+        <select id="switchable">
+            <option value="true">Switchable</option>
+            <option value="false">Nonswitchable</option>
+        </select>
+        <select id="strategy">
+            <option value="NullStrategy">Null Strategy - black color and 0 velocity</option>
+            <option value="StraightStrategy">Straight Strategy - move straight</option>
+            <option value="GravityStrategy">Gravity Strategy - gravity in positive Y direction</option>
+            <option value="ChangeSizeStrategy">Change Size Strategy - random size every update</option>
+            <option value="ChangeColorStrategy">Change Color Strategy - random color every update</option>
+            <option value="ShakingStrategy">Shaking Strategy - move up and down while moving horizontally</option>
+            <option value="ChangeColorAfterCollisionStrategy">Change Color After Collision Strategy - change color after
+                collision with a wall
+            </option>
+            <option value="RotatingStrategy">Rotating Strategy - rotate around a fixed point</option>
+
+
+        </select>
+        <button id="btn-load">Make Ball</button>
+        <button id="btn-clear">Clear</button>
+    </div>
+    <div style="display: flex; justify-content: center;margin-top: 10px;">
+        <b>It might take seconds for switch strategy to be effective due to heroku lag</b>
+    </div>
+    <div style="display: flex; justify-content: center;margin-top: 10px;">
+        <select id="switchableBalls">
+            <option value="balls">--- Balls ---</option>
+        </select>
+        <select id="availableStrategy">
+            <option value="availableStrategy">--- Available Strategies ---</option>
+        </select>
+        <button id="btn-switchStrategy" disabled>Switch Strategy</button>
+    </div>
+
+
+</div>
 
 
 </body>

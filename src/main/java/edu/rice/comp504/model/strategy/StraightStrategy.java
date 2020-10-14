@@ -7,15 +7,15 @@ import java.awt.*;
 /**
  * Horizontal strategy that makes a ball move horizontally.
  */
-public class HorizontalStrategy implements IUpdateStrategy {
+public class StraightStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
     private String name;
 
     /**
      * Private Constructor for singleton pattern.
      */
-    private HorizontalStrategy() {
-        this.name = "HorizontalStrategy";
+    private StraightStrategy() {
+        this.name = "StraightStrategy";
     }
 
     /**
@@ -25,7 +25,7 @@ public class HorizontalStrategy implements IUpdateStrategy {
      */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
-            singleton = new HorizontalStrategy();
+            singleton = new StraightStrategy();
         }
         return singleton;
     }
@@ -46,9 +46,11 @@ public class HorizontalStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public void updateState(Ball context) {
-        // By not setting velocity directly, ball can restore its velocity once switching to another strategy
-        context.setLocation(new Point(context.getVelocity().x + context.getLocation().x, context.getLocation().y));
-        context.detectCollision();
+    public boolean updateState(Ball context) {
+        Boolean b = context.getVelocity().x == context.getVelocity().y;
+        if(!b){
+            context.setVelocity(new Point(context.getVelocity().x,context.getVelocity().y));
+        }
+        return b;
     }
 }

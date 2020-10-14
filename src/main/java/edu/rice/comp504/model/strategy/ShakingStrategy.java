@@ -48,10 +48,9 @@ public class ShakingStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public void updateState(Ball context) {
+    public boolean updateState(Ball context) {
         context.setVelocity(new Point(context.getVelocity().x, dy));
         dy *= -1;
-        context.updateLocation();
-        context.detectCollision();
+        return true;
     }
 }

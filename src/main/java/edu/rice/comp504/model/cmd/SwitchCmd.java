@@ -1,6 +1,7 @@
 package edu.rice.comp504.model.cmd;
 
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Ball;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
 
 public class SwitchCmd implements IBallObjCmd {
@@ -21,7 +22,7 @@ public class SwitchCmd implements IBallObjCmd {
      * @param context The receiver paint object on which the command is executed.
      */
     @Override
-    public void execute(Ball context) {
+    public void execute(APaintObj context) {
         context.setStrategy(this.strategy);
     }
 }

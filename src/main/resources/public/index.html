@@ -13,35 +13,26 @@
     </div>
     <div style="display: flex; justify-content: center;margin-top: 20px;">
         <select id="switchable">
-            <option value="true">Switchable</option>
+            <option value="true" selected>Switchable</option>
             <option value="false">Nonswitchable</option>
         </select>
-        <select id="strategy">
-            <option value="NullStrategy">Null Strategy - black color and 0 velocity</option>
-            <option value="StraightStrategy">Straight Strategy - move straight</option>
-            <option value="GravityStrategy">Gravity Strategy - gravity in positive Y direction</option>
-            <option value="ChangeSizeStrategy">Change Size Strategy - random size every update</option>
-            <option value="ChangeColorStrategy">Change Color Strategy - random color every update</option>
-            <option value="ShakingStrategy">Shaking Strategy - move up and down while moving horizontally</option>
-            <option value="ChangeColorAfterCollisionStrategy">Change Color After Collision Strategy - change color after
-                collision with a wall
-            </option>
-            <option value="RotatingStrategy">Rotating Strategy - rotate around a fixed point</option>
-
-
+        <select id="object">
+            <option value="Ball" selected>Ball</option>
+            <option value="Fish">Fish</option>
         </select>
-        <button id="btn-load">Make Ball</button>
+        <select id="strategy"></select>
+        <button id="btn-load">Make Object</button>
         <button id="btn-clear">Clear</button>
     </div>
     <div style="display: flex; justify-content: center;margin-top: 10px;">
         <b>It might take seconds for switch strategy to be effective due to heroku lag</b>
     </div>
     <div style="display: flex; justify-content: center;margin-top: 10px;">
-        <select id="switchableBalls">
-            <option value="balls">--- Balls ---</option>
+        <select id="availableObjs">
+            <option value="null">--- Objects ---</option>
         </select>
         <select id="availableStrategy">
-            <option value="availableStrategy">--- Available Strategies ---</option>
+            <option value="null">--- Available Strategies ---</option>
         </select>
         <button id="btn-switchStrategy" disabled>Switch Strategy</button>
     </div>

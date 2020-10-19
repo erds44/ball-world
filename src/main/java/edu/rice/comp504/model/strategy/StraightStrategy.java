@@ -1,21 +1,21 @@
 package edu.rice.comp504.model.strategy;
 
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
 
-import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * Horizontal strategy that makes a ball move horizontally.
  */
 public class StraightStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
-    private String name;
+    private Strategy name;
 
     /**
      * Private Constructor for singleton pattern.
      */
     private StraightStrategy() {
-        this.name = "StraightStrategy";
+        this.name = Strategy.STRAIGHTSTRATEGY;
     }
 
     /**
@@ -36,7 +36,7 @@ public class StraightStrategy implements IUpdateStrategy {
      * @return strategy name
      */
     @Override
-    public String getName() {
+    public Strategy getName() {
         return this.name;
     }
 
@@ -46,11 +46,11 @@ public class StraightStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public boolean updateState(Ball context) {
+    public boolean updateState(APaintObj context) {
         Boolean b = context.getVelocity().x == context.getVelocity().y;
         if (!b) {
-            context.setVelocity(new Point(context.getVelocity().x, context.getVelocity().y));
+            context.setVelocity(new Point2D.Double(context.getVelocity().x, context.getVelocity().y));
         }
-        return b;
+        return !b;
     }
 }

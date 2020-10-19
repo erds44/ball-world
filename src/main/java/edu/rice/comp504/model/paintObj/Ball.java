@@ -1,25 +1,27 @@
-package edu.rice.comp504.model.ball;
+package edu.rice.comp504.model.paintObj;
 
 import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
 import edu.rice.comp504.model.strategy.RotatingStrategy;
+import edu.rice.comp504.model.strategy.Strategy;
 
-import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * The balls that will be drawn in the ball world.
  */
-public class Ball {
-    private static final double INFINITY = Double.POSITIVE_INFINITY;
-    private Point loc;
+public class Ball implements APaintObj {
+    public static final double INFINITY = Double.POSITIVE_INFINITY;
+    private String name = "Ball";
+    private Point2D.Double loc;
     private int radius;
-    private Point vel;
+    private Point2D.Double vel;
     private IUpdateStrategy strategy;
     private String color;
     private boolean switchable;
     private int id;
     private int count;  // number of collision such that an event can tell if there is any other collision happening before it.
-    public double mass;
+    private double mass;
 
     /**
      * Constructor.
@@ -31,17 +33,17 @@ public class Ball {
      * @param switchable Determines if the object can switch strategies
      * @param strategy   The object strategy
      */
-    public Ball(Point loc, int radius, Point vel, String color, boolean switchable, IUpdateStrategy strategy, int id) {
+    public Ball(Point2D.Double loc, int radius, Point2D.Double vel, String color, boolean switchable, IUpdateStrategy strategy, int id) {
         this.loc = loc;
         this.radius = radius;
         this.vel = vel;
         this.color = color;
         this.switchable = switchable;
         this.strategy = strategy;
-        this.strategy.updateState(this);
+        //this.strategy.updateState(this);
         this.id = id;
         this.count = 0;
-        this.mass = 1;
+        this.mass = radius * 0.1;
     }
 
     /**
@@ -68,7 +70,7 @@ public class Ball {
      *
      * @return The ball location.
      */
-    public Point getLocation() {
+    public Point2D.Double getLocation() {
         return this.loc;
     }
 
@@ -78,7 +80,7 @@ public class Ball {
      *
      * @param loc The ball coordinate.
      */
-    public void setLocation(Point loc) {
+    public void setLocation(Point2D.Double loc) {
         this.loc = loc;
     }
 
@@ -87,7 +89,7 @@ public class Ball {
      *
      * @return The ball velocity
      */
-    public Point getVelocity() {
+    public Point2D.Double getVelocity() {
         return this.vel;
     }
 
@@ -96,8 +98,9 @@ public class Ball {
      *
      * @param vel The new ball velocity
      */
-    public void setVelocity(Point vel) {
+    public void setVelocity(Point2D.Double vel) {
         this.vel = vel;
+        this.incrementCount();
     }
 
 
@@ -117,6 +120,7 @@ public class Ball {
      */
     public void setRadius(int r) {
         this.radius = r;
+        this.incrementCount();
     }
 
     /**
@@ -145,93 +149,25 @@ public class Ball {
      */
     public void setStrategy(IUpdateStrategy strategy) {
         if (switchable) {
-            if (this.strategy.getName().equals("RotatingStrategy")) {
+            if (this.strategy.getName() == Strategy.ROTATINGSTRATEGY) {
                 ((RotatingStrategy) this.strategy).notRotating(this.getID());
-            } else if (this.strategy.getName().equals("NullStrategy")) { // give some random velocity if switching from null
-                this.setVelocity(new Point(DispatchAdapter.getRnd(10, 40), DispatchAdapter.getRnd(10, 40)));
+            } else if (this.strategy.getName() == Strategy.NULLSTRATEGY) { // give some random velocity if switching from null
+                this.setVelocity(new Point2D.Double(DispatchAdapter.getRnd(10, 10), DispatchAdapter.getRnd(10, 10)));
             }
             this.strategy = strategy;
         }
     }
 
-    /**
-     * Detects collision between a ball and a wall in the ball world.  Change direction if ball collides with a wall.
-     *
-     * @return True if there was a collision and false otherwise.
-     */
-    public boolean detectCollision() {
-        int xBound = DispatchAdapter.getCanvasDims().x;
-        int yBound = DispatchAdapter.getCanvasDims().y;
-        int x = this.getLocation().x;
-        int y = this.getLocation().y;
-        int dx = this.getVelocity().x;
-        int dy = this.getVelocity().y;
-        int r = this.getRadius();
-        boolean isCollided = false;
-        // ball has collision within right wall
-        if (Math.abs(x - DispatchAdapter.dims.x) < r) {
-            x = DispatchAdapter.dims.x - r;
-            dx *= -1;
-            isCollided = true;
-            // ball entirely travel outside the right wall
-        } else if (x > DispatchAdapter.dims.x + r) {
-            x = 2 * DispatchAdapter.dims.x - x;
-            dx *= -1;
-            isCollided = true;
-        }
-        // ball has collision within left wall
-        if (Math.abs(x) < r) {
-            x = r;
-            dx *= -1;
-            isCollided = true;
-        } else if (x < -r) {
-            // ball entirely travel outside the right wall
-            x = -x;
-            dx *= -1;
-            isCollided = true;
-        }
-        // similar case for y direction
-        if (Math.abs(y - DispatchAdapter.dims.y) < r) {
-            y = DispatchAdapter.dims.y - r;
-            dy *= -1;
-            isCollided = true;
-            // ball entirely travel outside the right wall
-        } else if (y > DispatchAdapter.dims.y + r) {
-            y = 2 * DispatchAdapter.dims.y - y;
-            dy *= -1;
-            isCollided = true;
-        }
-        // ball has collision within left wall
-        if (Math.abs(y) < r) {
-            y = r;
-            dy *= -1;
-            isCollided = true;
-        } else if (y < -r) {
-            // ball entirely travel outside the left wall
-            y = -y;
-            dy *= -1;
-            isCollided = true;
-        }
-        this.setLocation(new Point(x, y));
-        //this.setVelocity(new Point(dx, dy));
-        return isCollided;
-    }
-
-    /**
-     * Update ball location based on the current velocity.
-     */
-    public void updateLocation() {
-        this.setLocation(new Point(this.getVelocity().x + this.getLocation().x, this.getVelocity().y + this.getLocation().y));
-    }
 
     /**
      * Update ball location based on the current velocity.
      */
     public void updateLocation(double time) {
-        double x = this.getLocation().x + this.getVelocity().x * time;
-        double y = this.getLocation().y + this.getVelocity().y * time;
-
-        this.setLocation(new Point((int) x, (int) y));
+        if (this.strategy.getName() != Strategy.ROTATINGSTRATEGY && this.strategy.getName() != Strategy.RANDOMLOCATIONSTRATEGY) {
+            double x = this.getLocation().x + this.getVelocity().x * time;
+            double y = this.getLocation().y + this.getVelocity().y * time;
+            this.setLocation(new Point2D.Double(x, y));
+        }
     }
 
     /**
@@ -277,20 +213,16 @@ public class Ball {
      * Updates the velocity of this particle upon collision with a vertical wall.
      */
     public void bounceOffVerticalWall() {
-        detectCollision();
-        int vx = this.getVelocity().x;
-        this.setVelocity(new Point(-vx, this.getVelocity().y));
-        this.count++;
+        double vx = this.getVelocity().x;
+        this.setVelocity(new Point2D.Double(-vx, this.getVelocity().y));
     }
 
     /**
      * Updates the velocity of this particle upon collision with a horizontal wall.
      */
     public void bounceOffHorizontalWall() {
-        detectCollision();
-        int vy = this.getVelocity().y;
-        this.setVelocity(new Point(this.getVelocity().x, -vy));
-        this.count++;
+        double vy = this.getVelocity().y;
+        this.setVelocity(new Point2D.Double(this.getVelocity().x, -vy));
     }
 
     /**
@@ -310,11 +242,12 @@ public class Ball {
     /**
      * Returns the amount of time for this particle to collide with the specified particle, assuming no interening collisions.
      *
-     * @param b the other particle
+     * @param obj the other particle
      * @return the amount of time for this particle to collide with the specified particle, assuming no interening collisions;
      * {@code Double.POSITIVE_INFINITY} if the particles will not collide
      */
-    public double timeToHit(Ball b) {
+    public double timeToHit(APaintObj obj) {
+        Ball b = (Ball) obj;
         if (this == b) {
             return INFINITY;
         }
@@ -344,22 +277,21 @@ public class Ball {
      * to the laws of elastic collision. Assumes that the particles are colliding
      * at this instant.
      *
-     * @param b the other particle
+     * @param obj the other particle
      */
-    public void bounceOff(Ball b) {
-//        this.updateLocation(time);
-//        b.updateLocation(time);
-
-
+    public void bounceOff(APaintObj obj) {
+        Ball b = (Ball) obj;
         double dx = b.getLocation().x - this.getLocation().x;
         double dy = b.getLocation().y - this.getLocation().y;
         double dvx = b.getVelocity().x - this.getVelocity().x;
         double dvy = b.getVelocity().y - this.getVelocity().y;
         double dvdr = dx * dvx + dy * dvy;             // dv dot dr
         double dist = this.getRadius() + b.getRadius();   // distance between particle centers at collison
+        double massA = this.getMass();
+        double massB = b.getMass();
 
         // magnitude of normal force
-        double magnitude = 2 * this.mass * b.mass * dvdr / ((this.mass + b.mass) * dist);
+        double magnitude = 2 * massA * massB * dvdr / ((massA + massB) * dist);
 
         // normal force, and in x and y directions
         double fx = magnitude * dx / dist;
@@ -372,19 +304,22 @@ public class Ball {
         double vby = b.getVelocity().y;
 
 
-        vx += fx / this.mass;
-        vy += fy / this.mass;
-        vbx -= fx / b.mass;
-        vby -= fy / b.mass;
+        vx += fx / massA;
+        vy += fy / massA;
+        vbx -= fx / massB;
+        vby -= fy / massB;
 
-        this.setVelocity(new Point((int) vx, (int) vy));
-        b.setVelocity(new Point((int) vbx, (int) vby));
-//
-//        this.setVelocity(new Point(-this.getVelocity().x, -this.getVelocity().y));
-//        b.setVelocity(new Point(-b.getVelocity().x, -b.getVelocity().y));
-//        // update collision counts
-        this.incrementCount();
-        b.incrementCount();
+        this.setVelocity(new Point2D.Double(vx, vy));
+        b.setVelocity(new Point2D.Double(vbx, vby));
+    }
+
+    public void setMass(double mass) {
+        this.mass = mass;
+
+    }
+
+    public double getMass() {
+        return this.mass;
     }
 
 

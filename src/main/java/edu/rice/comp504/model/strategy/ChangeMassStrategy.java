@@ -3,22 +3,21 @@ package edu.rice.comp504.model.strategy;
 import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.paintObj.APaintObj;
 
-import java.util.Arrays;
-
 /**
- * Change the color of a ball per update.
+ * Change the color of a ball if there is a collision.
  */
-public class ChangeColorStrategy implements IUpdateStrategy {
+public class ChangeMassStrategy implements IUpdateStrategy {
     private int frequency;
     private Strategy name;
 
     /**
      * private constructor for singleton pattern.
      */
-    public ChangeColorStrategy() {
+    public ChangeMassStrategy() {
         this.frequency = 0;
-        this.name = Strategy.CHANGECOLORSTRATEGY;
+        this.name = Strategy.CHANGEMASSSTRATEGY;
     }
+
 
     /**
      * The name of the strategy.
@@ -37,10 +36,8 @@ public class ChangeColorStrategy implements IUpdateStrategy {
      */
     @Override
     public boolean updateState(APaintObj context) {
-        if(++this.frequency % 10 == 0) {
-            int colorIndex = Arrays.asList(DispatchAdapter.availColors).indexOf(context.getColor());
-            colorIndex = ++colorIndex % DispatchAdapter.availColors.length;
-            context.setColor(DispatchAdapter.availColors[colorIndex]);
+        if (++this.frequency % 10 == 0) {
+            context.setMass(DispatchAdapter.getRnd(1, 9));
         }
         return false;
     }

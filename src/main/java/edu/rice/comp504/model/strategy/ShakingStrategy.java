@@ -1,36 +1,25 @@
 package edu.rice.comp504.model.strategy;
 
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
 
-import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * Add up and down displacement for a horizontal moving ball.
  */
 public class ShakingStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
-    private String name;
     private int dy;
+    private Strategy name;
 
     /**
      * private constructor for singleton pattern.
      */
-    private ShakingStrategy() {
-        this.name = "ShakingStrategy";
+    public ShakingStrategy() {
         this.dy = 10;
+        this.name = Strategy.SHAKINGSTRATEGY;
     }
 
-    /**
-     * Only makes 1 change color strategy.
-     *
-     * @return The change color strategy
-     */
-    public static IUpdateStrategy makeStrategy() {
-        if (singleton == null) {
-            singleton = new ShakingStrategy();
-        }
-        return singleton;
-    }
 
     /**
      * The name of the strategy.
@@ -38,7 +27,7 @@ public class ShakingStrategy implements IUpdateStrategy {
      * @return strategy name
      */
     @Override
-    public String getName() {
+    public Strategy getName() {
         return this.name;
     }
 
@@ -48,8 +37,8 @@ public class ShakingStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public boolean updateState(Ball context) {
-        context.setVelocity(new Point(context.getVelocity().x, dy));
+    public boolean updateState(APaintObj context) {
+        context.setVelocity(new Point2D.Double(context.getVelocity().x, dy));
         dy *= -1;
         return true;
     }

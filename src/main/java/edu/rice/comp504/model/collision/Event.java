@@ -1,6 +1,6 @@
-package edu.rice.comp504;
+package edu.rice.comp504.model.collision;
 
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
 
 /**
  * Event describes a collision between balls and walls, balls and balls.
@@ -11,8 +11,8 @@ import edu.rice.comp504.model.ball.Ball;
  */
 public class Event implements Comparable<Event> {
     private double time;
-    private final Ball a;
-    private final Ball b;
+    private final APaintObj a;
+    private final APaintObj b;
     private int countA;
     private int countB;
 
@@ -23,7 +23,7 @@ public class Event implements Comparable<Event> {
      * @param a first ball
      * @param b second ball
      */
-    public Event(double t, Ball a, Ball b) {
+    public Event(double t, APaintObj a, APaintObj b) {
         this.time = t;
         this.a = a;
         this.b = b;
@@ -41,6 +41,7 @@ public class Event implements Comparable<Event> {
 
     /**
      * Check if it is a valid collision.
+     *
      * @return if it is valid
      */
     public boolean isValidCollision() {
@@ -57,11 +58,11 @@ public class Event implements Comparable<Event> {
         return this.time;
     }
 
-    public Ball getA() {
+    public APaintObj getA() {
         return this.a;
     }
 
-    public Ball getB() {
+    public APaintObj getB() {
         return this.b;
     }
 

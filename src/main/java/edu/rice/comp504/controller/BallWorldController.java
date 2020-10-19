@@ -2,8 +2,8 @@ package edu.rice.comp504.controller;
 
 import com.google.gson.Gson;
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.ball.Ball;
-import edu.rice.comp504.model.strategy.RotatingStrategy;
+import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Ball;
 
 import java.util.Collection;
 
@@ -28,23 +28,23 @@ public class BallWorldController {
         DispatchAdapter dis = new DispatchAdapter();
 
         post("/load", (request, response) -> {
-            Ball ball = dis.loadBall(request.queryParams("strategy"), request.queryParams("switchable"));
-            return gson.toJson(ball);
+            APaintObj obj = dis.loadAPaintObj(request.queryParams("object"), request.queryParams("switchable"), request.queryParams("strategy"));
+            return gson.toJson(obj);
         });
 
         post("/switch", (request, response) -> {
-            Collection<Ball> balls = dis.switchStrategy(request.queryParams("id"), request.queryParams("strategy"));
-            return gson.toJson(balls);
+            APaintObj obj = dis.switchStrategy(request.queryParams("id"), request.queryParams("strategy"));
+            return gson.toJson(obj);
         });
 
         post("/strategy", (request, response) -> {
-            Ball b = dis.findStrategy(request.queryParams("id"));
-            return gson.toJson(b);
+            APaintObj obj = dis.getObj(request.queryParams("id"));
+            return gson.toJson(obj);
         });
 
         get("/update", (request, response) -> {
-            Collection<Ball> p = dis.updateBallWorld();
-            return gson.toJson(p);
+            Collection<APaintObj> objs = dis.updateBallWorld();
+            return gson.toJson(objs);
         });
 
         post("/canvas/dims", (request, response) -> {
@@ -55,7 +55,6 @@ public class BallWorldController {
 
         get("/clear", (request, response) -> {
             dis.removeBalls(-1);
-            ((RotatingStrategy) RotatingStrategy.makeStrategy()).clear();
             return gson.toJson("remove");
         });
 

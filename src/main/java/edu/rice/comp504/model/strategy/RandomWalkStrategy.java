@@ -1,21 +1,19 @@
 package edu.rice.comp504.model.strategy;
 
+import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.paintObj.APaintObj;
 
 import java.awt.geom.Point2D;
 
-/**
- * A Ball with black color and 0 velocity.
- */
-public class NullStrategy implements IUpdateStrategy {
+public class RandomWalkStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
     private Strategy name;
 
     /**
      * private constructor for singleton pattern.
      */
-    private NullStrategy() {
-        this.name = Strategy.NULLSTRATEGY;
+    private RandomWalkStrategy() {
+        this.name = Strategy.RANDOMWALKSTRATEGY;
     }
 
     /**
@@ -25,7 +23,7 @@ public class NullStrategy implements IUpdateStrategy {
      */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
-            singleton = new NullStrategy();
+            singleton = new RandomWalkStrategy();
         }
         return singleton;
     }
@@ -47,12 +45,21 @@ public class NullStrategy implements IUpdateStrategy {
      */
     @Override
     public boolean updateState(APaintObj context) {
-        if (context.getColor() != "black") {
-            context.setColor("black");
+        int rand = DispatchAdapter.getRnd(1, 4);
+        switch (rand) {
+            case 1:
+                context.setVelocity(new Point2D.Double(-5, 0));
+                break;
+            case 2:
+                context.setVelocity(new Point2D.Double(5, 0));
+                break;
+            case 3:
+                context.setVelocity(new Point2D.Double(0, -5));
+                break;
+            case 4:
+                context.setVelocity(new Point2D.Double(0, 5));
+                break;
         }
-        if (context.getVelocity().x != 0 || context.getVelocity().y != 0) {
-            context.setVelocity(new Point2D.Double(0, 0));
-        }
-        return false;
+        return true;
     }
 }

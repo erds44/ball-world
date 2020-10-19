@@ -1,10 +1,16 @@
 package edu.rice.comp504.model;
 
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Ball;
 import edu.rice.comp504.model.cmd.SwitchCmd;
+import edu.rice.comp504.model.collision.CollisionSystem;
+import edu.rice.comp504.model.paintObj.Fish;
 import edu.rice.comp504.model.strategy.*;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,22 +19,26 @@ import java.util.Map;
  * This adapter interfaces with the view (paint objects) and the controller.
  */
 public class DispatchAdapter {
-    private int ballID = 0;
+    private int objID = 0;
     public static Point dims;
     public static String[] availColors = {"red", "blue", "green", "black", "purple", "orange", "gray", "brown"};
-    private Map<Integer, Ball> balls = new HashMap<>();
-    private Map<Integer, Ball> newBalls = new HashMap<>();
+    private Map<Integer, APaintObj> objs = new HashMap<>();
+    private Map<Integer, APaintObj> newObjs = new HashMap<>();
     public static Map<String, IUpdateStrategy> map = new HashMap<>();
 
     {
         map.put("StraightStrategy", StraightStrategy.makeStrategy());
-        map.put("ChangeColorStrategy", ChangeColorStrategy.makeStrategy());
-        map.put("ChangeSizeStrategy", ChangeSizeStrategy.makeStrategy());
-        map.put("GravityStrategy", GravityStrategy.makeStrategy());
-        map.put("ShakingStrategy", ShakingStrategy.makeStrategy());
-        map.put("ChangeColorAfterCollisionStrategy", ChangeColorAfterCollisionStrategy.makeStrategy());
+        // map.put("ChangeColorStrategy", new ChangeColorStrategy());
+        // map.put("ChangeSizeStrategy", new ChangeSizeStrategy());
+        //map.put("GravityStrategy", GravityStrategy.makeStrategy());
+        // map.put("ShakingStrategy", new ShakingStrategy());
+        //map.put("ChangeColorAfterCollisionStrategy", new ChangeMassStrategy());
         map.put("NullStrategy", NullStrategy.makeStrategy());
         map.put("RotatingStrategy", RotatingStrategy.makeStrategy());
+        //map.put("ReverseVelocityStrategy", new ReverseVelocityStrategy());
+        //map.put("ChangeMassStrategy", new ChangeMassStrategy());
+        // map.put("RandomLocationStrategy", new RandomLocationStrategy());
+        map.put("RandomWalkStrategy", RandomWalkStrategy.makeStrategy());
     }
 
     /**
@@ -60,42 +70,58 @@ public class DispatchAdapter {
         }
     }
 
-    /**
-     * Load a ball into the paint world.
-     *
-     * @param body The REST request body has the strategy names.
-     * @return A paint object
-     */
-    public Ball loadBall(String body, String switchable) {
-        int r = getRnd(15, 15);
+    public APaintObj loadAPaintObj(String type, String switchable, String strategy) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        APaintObj obj;
+        IUpdateStrategy s = this.map.get(strategy);
+        boolean b = Boolean.parseBoolean(switchable);
+        if (s == null) {    // In case a strategy is not in the dictionary
+            try {
+                Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
+                Constructor c = name.getConstructor();
+                s = (IUpdateStrategy) c.newInstance();
+            } catch (ClassNotFoundException e) {
+                s = NullStrategy.makeStrategy();
+            }
+        }
+        if (type.equals("Fish")) {
+            obj = loadFish(b, s);
+        } else {
+            obj = loadBall(b, s);
+        }
+        this.newObjs.put(obj.getID(), obj);
+        return obj;
+    }
+
+    private APaintObj loadFish(boolean switchable, IUpdateStrategy strategy) {
+        int locX = getRnd(60, DispatchAdapter.dims.x - 2 * 60);
+        int locY = getRnd(60, DispatchAdapter.dims.y - 2 * 60);
+        int velX = getRnd(10, 10);
+        int velY = getRnd(10, 10);
+        return new Fish(new Point2D.Double(locX, locY), new Point2D.Double(velX, velY), switchable, strategy, ++this.objID);
+    }
+
+    private APaintObj loadBall(boolean switchable, IUpdateStrategy strategy) {
+        int r = getRnd(15, 10);
         int locX = getRnd(r, DispatchAdapter.dims.x - 2 * r);
         int locY = getRnd(r, DispatchAdapter.dims.y - 2 * r);
         int velX = getRnd(10, 10);
         int velY = getRnd(10, 10);
-        int colorIndex = getRnd(0, this.availColors.length);
-        IUpdateStrategy s = this.map.get(body);
-        // In case a strategy is not in the dictionary
-        if (s == null) {
-            s = NullStrategy.makeStrategy();
-        }
-        //Ball ball = new Ball(new Point(this.loc[this.index++], 400), r, new Point(velX, 0), this.availColors[colorIndex], Boolean.parseBoolean(switchable), s, ++this.ballID);
-        Ball ball = new Ball(new Point(locX, locY), r, new Point(velX, velY), this.availColors[colorIndex], Boolean.parseBoolean(switchable), s, ++this.ballID);
-        this.newBalls.put(this.ballID, ball);
-        return ball;
+        int colorIndex = getRnd(0, availColors.length);
+        return new Ball(new Point2D.Double(locX, locY), r, new Point2D.Double(velX, velY), availColors[colorIndex], switchable, strategy, ++this.objID);
     }
 
     /**
      * Call the update method on all the ball observers to update their position in the ball world.
      */
-    public Collection<Ball> updateBallWorld() {
-        Collection<Ball> balls = this.balls.values();
-        this.balls.putAll(this.newBalls);
-        for (Ball ball : this.newBalls.values()) {
-            CollisionSystem.makeOnly().predict(balls, ball);
+    public Collection<APaintObj> updateBallWorld() {
+        Collection<APaintObj> objs = this.objs.values();
+        this.objs.putAll(this.newObjs);
+        for (APaintObj obj : this.newObjs.values()) {
+            CollisionSystem.makeOnly().predict(objs, obj);
         }
-        this.newBalls.clear();
-        CollisionSystem.makeOnly().update(balls);
-        return balls;
+        this.newObjs.clear();
+        CollisionSystem.makeOnly().update(objs);
+        return objs;
     }
 
     /**
@@ -116,15 +142,21 @@ public class DispatchAdapter {
      * @param id       Ball id
      * @param strategy strategy to change for the ball
      */
-    public Collection<Ball> switchStrategy(String id, String strategy) {
+    public APaintObj switchStrategy(String id, String strategy) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         IUpdateStrategy s = this.map.get(strategy);
-        if (s == null) {
-            s = NullStrategy.makeStrategy();
+        if (s == null) {    // In case a strategy is not in the dictionary
+            try {
+                Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
+                Constructor c = name.getConstructor();
+                s = (IUpdateStrategy) c.newInstance();
+            } catch (ClassNotFoundException e) {
+                s = NullStrategy.makeStrategy();
+            }
         }
-        Ball ball = this.balls.get(Integer.parseInt(id));
-        new SwitchCmd(s).execute(ball);
-        CollisionSystem.makeOnly().predict(this.balls.values(), ball);
-        return this.balls.values();
+        APaintObj obj = this.objs.get(Integer.parseInt(id));
+        new SwitchCmd(s).execute(obj);
+        CollisionSystem.makeOnly().predict(this.objs.values(), obj);
+        return obj;
     }
 
     /**
@@ -133,8 +165,8 @@ public class DispatchAdapter {
      * @param id The REST request body of ball id
      * @return the ball with corresponding id
      */
-    public Ball findStrategy(String id) {
-        return this.balls.get(Integer.parseInt(id));
+    public APaintObj getObj(String id) {
+        return this.objs.get(Integer.parseInt(id));
     }
 
 
@@ -143,13 +175,14 @@ public class DispatchAdapter {
      */
     public void removeBalls(int id) {
         if (id == -1) {
-            this.newBalls.clear();
-            this.balls.clear();
+            this.newObjs.clear();
+            this.objs.clear();
             CollisionSystem.makeOnly().clear();
-            this.ballID = 0;
+            ((RotatingStrategy) RotatingStrategy.makeStrategy()).clear();
+            this.objID = 0;
         } else {
-            Ball ball = this.balls.remove(id);
-            ball.incrementCount(); // invalidate time event
+            APaintObj obj = this.objs.remove(id);
+            obj.incrementCount(); // invalidate time event in PQ
         }
     }
 

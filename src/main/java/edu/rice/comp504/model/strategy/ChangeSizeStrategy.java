@@ -2,32 +2,23 @@ package edu.rice.comp504.model.strategy;
 
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintObj.Fish;
 
 /**
  * Change Size strategy changes ball's radius per update randomly.
  */
 public class ChangeSizeStrategy implements IUpdateStrategy {
-    private static IUpdateStrategy singleton;
-    private String name;
+    private int frequency;
+    private Strategy name;
 
     /**
      * private constructor for singleton pattern.
      */
-    private ChangeSizeStrategy() {
-        this.name = "ChangeSizeStrategy";
-    }
-
-    /**
-     * Only makes 1 change size strategy.
-     *
-     * @return The change size strategy
-     */
-    public static IUpdateStrategy makeStrategy() {
-        if (singleton == null) {
-            singleton = new ChangeSizeStrategy();
-        }
-        return singleton;
+    public ChangeSizeStrategy() {
+        this.frequency = 0;
+        this.name = Strategy.CHANGESIZESTRATEGY;
     }
 
 
@@ -37,7 +28,7 @@ public class ChangeSizeStrategy implements IUpdateStrategy {
      * @return strategy name
      */
     @Override
-    public String getName() {
+    public Strategy getName() {
         return this.name;
     }
 
@@ -47,9 +38,18 @@ public class ChangeSizeStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public boolean updateState(Ball context) {
-        context.setRadius(DispatchAdapter.getRnd(15, 15));
-        context.incrementCount();
-        return true;
+    public boolean updateState(APaintObj context) {
+        if (++this.frequency % 50 == 0) {
+            if (context instanceof Ball) {
+                Ball ball = (Ball) context;
+                ball.setRadius(DispatchAdapter.getRnd(15, 10));
+                return true;
+            } else {
+                Fish fish = (Fish) context;
+                fish.setScale(Math.random() * 0.05 + 0.1);
+                return true;
+            }
+        }
+        return false;
     }
 }

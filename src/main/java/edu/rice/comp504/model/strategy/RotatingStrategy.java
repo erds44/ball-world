@@ -1,9 +1,11 @@
 package edu.rice.comp504.model.strategy;
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintObj.Fish;
 
-import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,17 +14,17 @@ import java.util.Map;
  */
 public class RotatingStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
-    private String name;
     private double rotateAngle;
-    private Map<Integer, Point> idToLoc = new HashMap<>();
+    private Map<Integer, Point2D.Double> idToLoc = new HashMap<>();
     private Map<Integer, Boolean> idToBool = new HashMap<>();
+    private Strategy name;
 
     /**
      * private constructor for singleton pattern.
      */
     private RotatingStrategy() {
-        this.name = "RotatingStrategy";
         this.rotateAngle = 9.0 / 180 * Math.PI; // 9 degree rotation per 0.1 second
+        this.name = Strategy.ROTATINGSTRATEGY;
     }
 
     /**
@@ -43,9 +45,9 @@ public class RotatingStrategy implements IUpdateStrategy {
      * @param context The ball
      * @return Fixed location
      */
-    public Point adjustLoc(Ball context) {
-        int locX = context.getLocation().x;
-        int locY = context.getLocation().y;
+    public Point2D.Double adjustBallLoc(Ball context) {
+        double locX = context.getLocation().x;
+        double locY = context.getLocation().y;
         int xBound = DispatchAdapter.getCanvasDims().x;
         int yBound = DispatchAdapter.getCanvasDims().y;
         int r = context.getRadius();
@@ -57,9 +59,37 @@ public class RotatingStrategy implements IUpdateStrategy {
         if (locY > yBound - 6 * r) {
             locY = yBound - 6 * r;
         }
-        context.setLocation(new Point(locX, locY));
+        context.setLocation(new Point2D.Double(locX, locY));
         // assume fixed location is always two radius distance below the center point in Y direction
-        return new Point(locX, locY + 2 * r);
+        System.out.println(locX + " " + locY);
+        return new Point2D.Double(locX, locY + 2 * r);
+    }
+
+    public Point2D.Double adjustFishLoc(Fish context) {
+        double locX = context.getLocation().x;
+        double locY = context.getLocation().y;
+        int xBound = DispatchAdapter.getCanvasDims().x;
+        int yBound = DispatchAdapter.getCanvasDims().y;
+        double height = context.getHeight();
+        double width = context.getWidth();
+        if (locX < 3 * width) {
+            locX = 3 * width;
+        } else if (locX > xBound - 3 * width) {
+            locX = xBound - 3 * width;
+        }
+        if (locY > yBound - 6 * height) {
+            locY = yBound - 6 * height;
+        }
+        context.setLocation(new Point2D.Double(locX, locY));
+        // assume fixed location is always two height distance below the center point in Y direction
+        return new Point2D.Double(locX, locY + 2 * height);
+    }
+
+    public Point2D.Double adjustLoc(APaintObj context) {
+        if (context instanceof Ball) {
+            return adjustBallLoc((Ball) context);
+        }
+        return adjustFishLoc((Fish) context);
     }
 
     /**
@@ -84,7 +114,7 @@ public class RotatingStrategy implements IUpdateStrategy {
      * @return strategy name
      */
     @Override
-    public String getName() {
+    public Strategy getName() {
         return this.name;
     }
 
@@ -94,7 +124,8 @@ public class RotatingStrategy implements IUpdateStrategy {
      * @param context The ball.
      */
     @Override
-    public boolean updateState(Ball context) {
+    public boolean updateState(APaintObj context) {
+
         if (!this.idToBool.containsKey(context.getID())) {
             this.idToLoc.put(context.getID(), this.adjustLoc(context));
             this.idToBool.put(context.getID(), true);
@@ -102,12 +133,20 @@ public class RotatingStrategy implements IUpdateStrategy {
             this.idToLoc.replace(context.getID(), this.adjustLoc(context));
             this.idToBool.replace(context.getID(), true);
         }
-        Point loc = this.idToLoc.get(context.getID());
-        int dx = context.getLocation().x - loc.x;
-        int dy = context.getLocation().y - loc.y;
+
+        Point2D.Double loc = this.idToLoc.get(context.getID());
+        double dx = context.getLocation().x - loc.x;
+        double dy = context.getLocation().y - loc.y;
         double rotatedX = Math.cos(rotateAngle) * (dx) - Math.sin(rotateAngle) * (dy) + loc.x;
         double rotatedY = Math.sin(rotateAngle) * (dx) + Math.cos(rotateAngle) * (dy) + loc.y;
-        context.setLocation(new Point((int) rotatedX, (int) rotatedY));
+        context.setLocation(new Point2D.Double(rotatedX, rotatedY));
+
+
+        if (context instanceof Fish) {
+            Fish fish = (Fish) context;
+            fish.setAngel(fish.getAngel() + this.rotateAngle);
+        }
+        context.incrementCount();
         return false;
     }
 }

@@ -1,6 +1,7 @@
 package edu.rice.comp504.model.cmd;
 
-import edu.rice.comp504.model.ball.Ball;
+import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Ball;
 
 
 /**
@@ -34,7 +35,7 @@ public class UpdateCmd implements IBallObjCmd {
      * @param context The receiver paint object on which the command is executed.
      */
     @Override
-    public void execute(Ball context) {
+    public void execute(APaintObj context) {
         context.getStrategy().updateState(context);
     }
 }

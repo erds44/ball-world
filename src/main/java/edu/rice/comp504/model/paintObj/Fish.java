@@ -7,6 +7,9 @@ import edu.rice.comp504.model.strategy.Strategy;
 
 import java.awt.geom.Point2D;
 
+/**
+ * The fish that will be drawn in the object world.
+ */
 public class Fish implements APaintObj {
     private Object name;
     private Point2D.Double loc;
@@ -23,6 +26,15 @@ public class Fish implements APaintObj {
     private double angle;
     private boolean isStop;
 
+    /**
+     * Constructor.
+     *
+     * @param loc        The location of fish
+     * @param vel        The fish velocity
+     * @param switchable Is the fish switchable
+     * @param strategy   The fish strategy
+     * @param id         The fish id
+     */
     public Fish(Point2D.Double loc, Point2D.Double vel, boolean switchable, IUpdateStrategy strategy, int id) {
         this.loc = loc;
         this.vel = vel;
@@ -45,91 +57,150 @@ public class Fish implements APaintObj {
         this.name = Object.Fish;
     }
 
-
     /**
-     * Update ball location based on the current velocity.
+     * Get the fish color.
+     *
+     * @return fish color
      */
-    @Override
-    public void updateLocation(double time) {
-        if (this.strategy.getName() != Strategy.ROTATINGSTRATEGY && this.strategy.getName() != Strategy.RANDOMLOCATIONSTRATEGY && !isStop) {
-            double x = this.getLocation().x + this.getVelocity().x * time;
-            double y = this.getLocation().y + this.getVelocity().y * time;
-            this.setLocation(new Point2D.Double(x, y));
-        }
+
+    public String getColor() {
+        return this.color;
     }
 
     /**
-     * Get the ball location in the ball world.
+     * Set the fish color.
      *
-     * @return The ball location.
+     * @param c The new fish color
      */
-    @Override
-    public Point2D.Double getLocation() {
-        return this.loc;
+
+    public void setColor(String c) {
+        this.color = c;
     }
 
     /**
-     * Set the ball location in the canvas.  The origin (0,0) is the top left corner of the canvas.
+     * Set the object mass.
      *
-     * @param loc The ball coordinate.
+     * @param mass
      */
-    @Override
-    public void setLocation(Point2D.Double loc) {
-        this.loc = loc;
+
+    public void setMass(double mass) {
+        this.mass = mass;
     }
 
     /**
-     * Get the velocity of the ball.
+     * Get the object mass.
      *
-     * @return The ball velocity
+     * @return the object mass
      */
-    @Override
-    public Point2D.Double getVelocity() {
-        return this.vel;
+    public double getMass() {
+        return this.mass;
     }
 
     /**
-     * Set the velocity of the ball.
-     *
-     * @param vel The new ball velocity
+     * Set the object scale.
      */
-    @Override
-    public void setVelocity(Point2D.Double vel) {
-        if (vel.x > 0) {
-            this.scale = new Point2D.Double(-Math.abs(this.scale.x), this.scale.y);
-        } else if (vel.x < 0) {
-            this.scale = new Point2D.Double(Math.abs(this.scale.x), this.scale.y);
-        }
-        this.vel = vel;
+
+    public void setScale(double scale) {
+        double ratio = scale / 0.1;
+        this.width = 60 * ratio;
+        this.height = 50 * ratio;
+        double scaleX = Math.signum(this.scale.x) * scale;
+        this.scale = new Point2D.Double(scaleX, scale);
         incrementCount();
     }
 
     /**
-     * Get the ball id.
+     * Get the object scale.
      *
-     * @return The ball id.
+     * @return object scale
      */
-    @Override
+    public double getScale() {
+        return this.scale.x;
+    }
+
+    /**
+     * Get the object name.
+     *
+     * @return object name
+     */
+    public Object getName() {
+        return this.name;
+    }
+
+    /**
+     * Get the object width.
+     *
+     * @return object width
+     */
+    public double getWidth() {
+        return this.width;
+    }
+
+    /**
+     * Get the object height.
+     *
+     * @return object height
+     */
+    public double getHeight() {
+        return this.height;
+    }
+
+    /**
+     * Get the object angle.
+     *
+     * @return object angle
+     */
+    public double getAngle() {
+        return this.angle;
+    }
+
+    /**
+     * Set the object angle.
+     *
+     * @param angle object angle
+     */
+
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+
+    /**
+     * Set is object stop.
+     *
+     * @param stop isStop
+     */
+
+    public void setStop(boolean stop) {
+        this.isStop = stop;
+    }
+
+    /**
+     * Get the fish id.
+     *
+     * @return The fish id.
+     */
+
     public int getID() {
         return this.id;
     }
 
     /**
-     * Get the ball strategy.
+     * Get the fish strategy.
      *
-     * @return The ball strategy.
+     * @return The fish strategy.
      */
-    @Override
+
     public IUpdateStrategy getStrategy() {
         return this.strategy;
     }
 
+
     /**
-     * Set the strategy if the ball can switch strategies.
+     * Set the strategy if the fish can switch strategies.
      *
      * @param strategy The new strategy
      */
-    @Override
+
     public void setStrategy(IUpdateStrategy strategy) {
         if (switchable) {
             switch (this.getStrategy().getName()) {
@@ -152,12 +223,85 @@ public class Fish implements APaintObj {
     }
 
     /**
+     * Get the fish location in the fish world.
+     *
+     * @return The fish location.
+     */
+    public Point2D.Double getLocation() {
+        return this.loc;
+    }
+
+    /**
+     * Set the fish location in the canvas.  The origin (0,0) is the top left corner of the canvas.
+     *
+     * @param loc The fish coordinate.
+     */
+    public void setLocation(Point2D.Double loc) {
+        this.loc = loc;
+    }
+
+    /**
+     * Get the velocity of the fish.
+     *
+     * @return The fish velocity
+     */
+    public Point2D.Double getVelocity() {
+        return this.vel;
+    }
+
+    /**
+     * Set the velocity of the fish.
+     *
+     * @param vel The new fish velocity
+     */
+    public void setVelocity(Point2D.Double vel) {
+        if (vel.x > 0) {
+            this.scale = new Point2D.Double(-Math.abs(this.scale.x), this.scale.y);
+        } else if (vel.x < 0) {
+            this.scale = new Point2D.Double(Math.abs(this.scale.x), this.scale.y);
+        }
+        this.vel = vel;
+        incrementCount();
+    }
+
+    /**
+     * Returns the number of collisions involving this particle with
+     * vertical walls, horizontal walls, or other fishs.
+     *
+     * @return the number of collisions.
+     */
+
+    public int count() {
+        return this.count;
+    }
+
+    /**
+     * Increase the count.
+     */
+    public void incrementCount() {
+        this.count++;
+    }
+
+
+    /**
+     * Update fish location based on the current velocity.
+     */
+    public void updateLocation(double time) {
+        if (this.strategy.getName() != Strategy.ROTATINGSTRATEGY && this.strategy.getName() != Strategy.RANDOMLOCATIONSTRATEGY && !isStop) {
+            double x = this.getLocation().x + this.getVelocity().x * time;
+            double y = this.getLocation().y + this.getVelocity().y * time;
+            this.setLocation(new Point2D.Double(x, y));
+        }
+    }
+
+
+    /**
      * Returns the amount of time to collide with a vertical
      * wall, assuming no intermediate collisions.
      *
      * @return the amount of time for this particle to collide with a vertical wall
      */
-    @Override
+
     public double timeToHitVerticalWall() {
         double vx = this.getVelocity().x;
         double locX = this.getLocation().x;
@@ -176,7 +320,7 @@ public class Fish implements APaintObj {
      *
      * @return the amount of time for this particle to collide with a horizontal wall
      */
-    @Override
+
     public double timeToHitHorizontalWall() {
         double vy = this.getVelocity().y;
         double locY = this.getLocation().y;
@@ -192,9 +336,8 @@ public class Fish implements APaintObj {
     /**
      * Updates the velocity of this particle upon collision with a vertical wall.
      */
-    @Override
+
     public void bounceOffVerticalWall() {
-        //this.scale = new Point2D.Double(-this.scale.x, this.scale.y);
         this.setVelocity(new Point2D.Double(-this.getVelocity().x, this.getVelocity().y));
         this.setLocation(new Point2D.Double(this.getLocation().x + Math.signum(this.getVelocity().x) * this.width, this.getLocation().y));
     }
@@ -202,27 +345,12 @@ public class Fish implements APaintObj {
     /**
      * Updates the velocity of this particle upon collision with a horizontal wall.
      */
-    @Override
+
     public void bounceOffHorizontalWall() {
         double vy = this.getVelocity().y;
         this.setVelocity(new Point2D.Double(this.getVelocity().x, -vy));
     }
 
-    /**
-     * Returns the number of collisions involving this particle with
-     * vertical walls, horizontal walls, or other balls.
-     *
-     * @return the number of collisions.
-     */
-    @Override
-    public int count() {
-        return this.count;
-    }
-
-    @Override
-    public void incrementCount() {
-        this.count++;
-    }
 
     /**
      * Returns the amount of time for this particle to collide with the specified particle, assuming no interening collisions.
@@ -231,8 +359,9 @@ public class Fish implements APaintObj {
      * @return the amount of time for this particle to collide with the specified particle, assuming no interening collisions;
      * {@code Double.POSITIVE_INFINITY} if the particles will not collide
      */
-    @Override
+
     public double timeToHit(APaintObj b) {
+        // add the extensibility if considering fish is collidable 
         return 0;
     }
 
@@ -243,74 +372,10 @@ public class Fish implements APaintObj {
      *
      * @param b the other particle
      */
-    @Override
+
     public void bounceOff(APaintObj b) {
-
-    }
-
-    /**
-     * Get the ball color.
-     *
-     * @return ball color
-     */
-
-    public String getColor() {
-        return this.color;
-    }
-
-    /**
-     * Set the ball color.
-     *
-     * @param c The new ball color
-     */
-
-    public void setColor(String c) {
-        this.color = c;
+        // add the extensibility if considering fish is collidable 
     }
 
 
-    public void setMass(double mass) {
-        this.mass = mass;
-    }
-
-    public double getMass() {
-        return this.mass;
-    }
-
-    public void setScale(double scale) {
-        double ratio = scale / 0.1;
-        this.width = 60 * ratio;
-        this.height = 50 * ratio;
-        double scaleX = Math.signum(this.scale.x) * scale;
-        this.scale = new Point2D.Double(scaleX, scale);
-        incrementCount();
-    }
-
-    public double getWidth() {
-        return this.width;
-    }
-
-    public double getHeight() {
-        return this.height;
-    }
-
-    public double getAngle() {
-        return this.angle;
-    }
-
-    public void setAngle(double angle) {
-        this.angle = angle;
-    }
-
-    public void setStop(boolean stop) {
-        this.isStop = stop;
-    }
-
-    public double getScale() {
-        return this.scale.x;
-    }
-
-    public Object getName() {
-        return this.name;
-    }
 }

@@ -6,14 +6,14 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import java.util.Arrays;
 
 /**
- * Change the color of a ball per update.
+ * Change the color of a ball per second.
  */
 public class ChangeColorStrategy implements IUpdateStrategy {
     private int frequency;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * public constructor.
      */
     public ChangeColorStrategy() {
         this.frequency = 0;
@@ -31,13 +31,14 @@ public class ChangeColorStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {
-        if(++this.frequency % 10 == 0) {
+        if (++this.frequency % 10 == 0) {
             int colorIndex = Arrays.asList(DispatchAdapter.availColors).indexOf(context.getColor());
             colorIndex = ++colorIndex % DispatchAdapter.availColors.length;
             context.setColor(DispatchAdapter.availColors[colorIndex]);

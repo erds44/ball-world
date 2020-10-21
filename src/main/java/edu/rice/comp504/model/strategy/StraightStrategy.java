@@ -5,7 +5,7 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import java.awt.geom.Point2D;
 
 /**
- * Horizontal strategy that makes a ball move horizontally.
+ * Straight strategy that makes a object move straight.
  */
 public class StraightStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
@@ -19,9 +19,9 @@ public class StraightStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Only makes 1 horizontal strategy.
+     * Only makes 1 straight strategy.
      *
-     * @return The horizontal strategy
+     * @return The straight strategy
      */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
@@ -41,9 +41,10 @@ public class StraightStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Set the y velocity of a ball to 0 if applicable.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

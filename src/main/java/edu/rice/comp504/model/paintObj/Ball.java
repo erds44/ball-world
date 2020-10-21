@@ -8,7 +8,7 @@ import edu.rice.comp504.model.strategy.Strategy;
 import java.awt.geom.Point2D;
 
 /**
- * The balls that will be drawn in the ball world.
+ * The balls that will be drawn in the object world.
  */
 public class Ball implements APaintObj {
     public static final double INFINITY = Double.POSITIVE_INFINITY;
@@ -65,6 +65,16 @@ public class Ball implements APaintObj {
         this.color = c;
     }
 
+    /**
+     * Set the velocity of the ball.
+     *
+     * @param vel The new ball velocity
+     */
+    public void setVelocity(Point2D.Double vel) {
+        this.vel = vel;
+        this.incrementCount();
+    }
+
 
     /**
      * Get the ball location in the ball world.
@@ -92,16 +102,6 @@ public class Ball implements APaintObj {
      */
     public Point2D.Double getVelocity() {
         return this.vel;
-    }
-
-    /**
-     * Set the velocity of the ball.
-     *
-     * @param vel The new ball velocity
-     */
-    public void setVelocity(Point2D.Double vel) {
-        this.vel = vel;
-        this.incrementCount();
     }
 
 
@@ -157,6 +157,34 @@ public class Ball implements APaintObj {
             }
             this.strategy = strategy;
         }
+    }
+
+    /**
+     * Set the object mass.
+     *
+     * @param mass
+     */
+    public void setMass(double mass) {
+        this.mass = mass;
+
+    }
+
+    /**
+     * Get the object mass.
+     *
+     * @return the object mass
+     */
+    public double getMass() {
+        return this.mass;
+    }
+
+    /**
+     * Get the object name.
+     *
+     * @return the object name
+     */
+    public Object getName() {
+        return this.name;
     }
 
 
@@ -236,6 +264,10 @@ public class Ball implements APaintObj {
         return this.count;
     }
 
+    /**
+     * Increment the object count.
+     */
+
     public void incrementCount() {
         this.count++;
     }
@@ -312,19 +344,6 @@ public class Ball implements APaintObj {
 
         this.setVelocity(new Point2D.Double(vx, vy));
         b.setVelocity(new Point2D.Double(vbx, vby));
-    }
-
-    public void setMass(double mass) {
-        this.mass = mass;
-
-    }
-
-    public double getMass() {
-        return this.mass;
-    }
-
-    public Object getName(){
-        return this.name;
     }
 
 

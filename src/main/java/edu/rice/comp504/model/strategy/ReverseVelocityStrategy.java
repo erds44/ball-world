@@ -6,13 +6,15 @@ import edu.rice.comp504.model.paintObj.Fish;
 
 import java.awt.geom.Point2D;
 
+/**
+ * Reverse the velocity of a object every 5 seconds.
+ */
 public class ReverseVelocityStrategy implements IUpdateStrategy {
-    private static IUpdateStrategy singleton;
     private int frequency;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * private constructor.
      */
     public ReverseVelocityStrategy() {
         this.frequency = 0;
@@ -31,9 +33,10 @@ public class ReverseVelocityStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {
@@ -47,6 +50,12 @@ public class ReverseVelocityStrategy implements IUpdateStrategy {
         }
         return false;
     }
+
+    /**
+     * Adjust fish location in case fish is near the walls.
+     *
+     * @param context fish
+     */
 
     public void adjustFishLoc(Fish context) {
         double locX = context.getLocation().x;

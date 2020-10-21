@@ -1,5 +1,8 @@
 package edu.rice.comp504.model.strategy;
 
+/**
+ * Enum for strategy.
+ */
 public enum Strategy {
     CHANGECOLORSTRATEGY,
     CHANGESIZESTRATEGY,

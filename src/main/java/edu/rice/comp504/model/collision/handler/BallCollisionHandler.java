@@ -7,7 +7,9 @@ import edu.rice.comp504.model.strategy.Strategy;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * The BallCollisionHandler makes decisions on how to handle ball-ball collision.
+ */
 public class BallCollisionHandler implements ICollisionHandler {
     private static BallCollisionHandler singleton;
     private Map<Map.Entry<Strategy, Strategy>, ICollisionResolution> map = new HashMap<>();
@@ -27,8 +29,18 @@ public class BallCollisionHandler implements ICollisionHandler {
 
     }
 
+    /**
+     * Private constructor for singleton pattern.
+     */
     private BallCollisionHandler() {
     }
+
+
+    /**
+     * Only makes 1 BallCollisionHandler.
+     *
+     * @return The BallCollisionHandler
+     */
 
     public static BallCollisionHandler makeOnly() {
         if (singleton == null) {
@@ -36,6 +48,13 @@ public class BallCollisionHandler implements ICollisionHandler {
         }
         return singleton;
     }
+
+    /**
+     * Decision on how to handle two APaintObj.
+     *
+     * @param a first object in collision
+     * @param b second object in collision
+     */
 
     @Override
     public void handleCollision(APaintObj a, APaintObj b) {

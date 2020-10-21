@@ -5,61 +5,115 @@ import edu.rice.comp504.model.strategy.IUpdateStrategy;
 
 import java.awt.geom.Point2D;
 
+/**
+ * The APaintObj defines all the objects that can be painted on canvas.
+ */
 public interface APaintObj {
     /**
-     * Update ball location based on the current velocity.
-     */
-    void updateLocation(double time);
-
-    /**
-     * Get the ball location in the ball world.
+     * Get the object location in the object world.
      *
-     * @return The ball location.
+     * @return The object location.
      */
     Point2D.Double getLocation();
 
     /**
-     * Set the ball location in the canvas.  The origin (0,0) is the top left corner of the canvas.
+     * Set the object location in the canvas.  The origin (0,0) is the top left corner of the canvas.
      *
-     * @param loc The ball coordinate.
+     * @param loc The object coordinate.
      */
     void setLocation(Point2D.Double loc);
 
     /**
-     * Get the velocity of the ball.
+     * Get the velocity of the object.
      *
-     * @return The ball velocity
+     * @return The object velocity
      */
     Point2D.Double getVelocity();
 
     /**
-     * Set the velocity of the ball.
+     * Set the velocity of the object.
      *
-     * @param vel The new ball velocity
+     * @param vel The new object velocity
      */
     void setVelocity(Point2D.Double vel);
 
     /**
-     * Get the ball id.
+     * Get the object strategy.
      *
-     * @return The ball id.
+     * @return The object strategy.
+     */
+    IUpdateStrategy getStrategy();
+
+    /**
+     * Set the strategy if the object can switch strategies.
+     *
+     * @param strategy The new strategy
+     */
+    void setStrategy(IUpdateStrategy strategy);
+
+    /**
+     * Get the object color.
+     *
+     * @return object color
+     */
+    String getColor();
+
+    /**
+     * Set the object color.
+     *
+     * @param c The new object color
+     */
+    void setColor(String c);
+
+    /**
+     * Get the object mass.
+     *
+     * @return the object mass
+     */
+    double getMass();
+
+    /**
+     * Set the object mass.
+     *
+     * @param mass
+     */
+    void setMass(double mass);
+
+    /**
+     * Get the object name.
+     *
+     * @return the object name
+     */
+
+    Object getName();
+
+
+    /**
+     * Update object location based on the current velocity.
+     */
+    void updateLocation(double time);
+
+
+    /**
+     * Get the object id.
+     *
+     * @return The object id.
      */
 
     int getID();
 
     /**
-     * Get the ball strategy.
+     * Returns the number of collisions involving this particle with
+     * vertical walls, horizontal walls, or other objects.
      *
-     * @return The ball strategy.
+     * @return the number of collisions.
      */
-    IUpdateStrategy getStrategy();
+    int count();
 
     /**
-     * Set the strategy if the ball can switch strategies.
-     *
-     * @param strategy The new strategy
+     * Increment the object count.
      */
-    void setStrategy(IUpdateStrategy strategy);
+    void incrementCount();
 
     /**
      * Returns the amount of time to collide with a vertical
@@ -87,15 +141,6 @@ public interface APaintObj {
      */
     void bounceOffHorizontalWall();
 
-    /**
-     * Returns the number of collisions involving this particle with
-     * vertical walls, horizontal walls, or other balls.
-     *
-     * @return the number of collisions.
-     */
-    int count();
-
-    void incrementCount();
 
     /**
      * Returns the amount of time for this particle to collide with the specified particle, assuming no interening collisions.
@@ -114,26 +159,6 @@ public interface APaintObj {
      * @param b the other particle
      */
     void bounceOff(APaintObj b);
-
-    /**
-     * Get the ball color.
-     *
-     * @return ball color
-     */
-    String getColor();
-
-    /**
-     * Set the ball color.
-     *
-     * @param c The new ball color
-     */
-    void setColor(String c);
-
-    void setMass(double mass);
-
-    double getMass();
-
-    Object getName();
 
 
 }

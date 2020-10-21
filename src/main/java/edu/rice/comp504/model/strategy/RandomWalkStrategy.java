@@ -5,21 +5,24 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 
 import java.awt.geom.Point2D;
 
+/**
+ * Simulates the random walk with equal probability going up down left and right.
+ */
 public class RandomWalkStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * Private constructor for singleton pattern.
      */
     private RandomWalkStrategy() {
         this.name = Strategy.RANDOMWALKSTRATEGY;
     }
 
     /**
-     * Only makes 1 change color strategy.
+     * Only makes 1 randomWalk strategy.
      *
-     * @return The change color strategy
+     * @return The randomWalk strategy
      */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
@@ -39,9 +42,10 @@ public class RandomWalkStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

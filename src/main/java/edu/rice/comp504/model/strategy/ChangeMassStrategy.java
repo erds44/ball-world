@@ -4,14 +4,14 @@ import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.paintObj.APaintObj;
 
 /**
- * Change the color of a ball if there is a collision.
+ * Change the mass of a ball if there is a collision.
  */
 public class ChangeMassStrategy implements IUpdateStrategy {
     private int frequency;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * public constructor.
      */
     public ChangeMassStrategy() {
         this.frequency = 0;
@@ -30,9 +30,10 @@ public class ChangeMassStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Ball can rotate around a fixed point.
+ * Object can rotate around a fixed point.
  */
 public class RotatingStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
@@ -28,9 +28,9 @@ public class RotatingStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Only makes 1 change color strategy.
+     * Only makes 1 rotating strategy.
      *
-     * @return The change color strategy
+     * @return The rotating strategy
      */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
@@ -40,7 +40,7 @@ public class RotatingStrategy implements IUpdateStrategy {
     }
 
     /**
-     * adjust ball location such that rotating ball will not be drawn outside the canvas.
+     * Adjust ball location such that rotating ball will not be drawn outside the canvas.
      *
      * @param context The ball
      * @return Fixed location
@@ -64,6 +64,12 @@ public class RotatingStrategy implements IUpdateStrategy {
         return new Point2D.Double(locX, locY + 2 * r);
     }
 
+    /**
+     * Adjust fish location such that rotating ball will not be drawn outside the canvas.
+     *
+     * @param context The fish
+     * @return Fixed location
+     */
     public Point2D.Double adjustFishLoc(Fish context) {
         double locX = context.getLocation().x;
         double locY = context.getLocation().y;
@@ -83,6 +89,13 @@ public class RotatingStrategy implements IUpdateStrategy {
         // assume fixed location is always two height distance below the center point in Y direction
         return new Point2D.Double(locX, locY + 2 * height);
     }
+
+    /**
+     * Adjust the fish or ball location.
+     *
+     * @param context object
+     * @return fixed position
+     */
 
     public Point2D.Double adjustLoc(APaintObj context) {
         if (context instanceof Ball) {
@@ -118,9 +131,10 @@ public class RotatingStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

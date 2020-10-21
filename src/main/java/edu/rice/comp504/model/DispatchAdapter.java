@@ -53,7 +53,7 @@ public class DispatchAdapter {
     /**
      * Set the canvas dimensions.
      *
-     * @param dims The canvas width (x) and height (y).
+     * @param body the request body
      */
     public void setCanvasDims(String body) {
         parseBody(body);
@@ -61,6 +61,17 @@ public class DispatchAdapter {
         String width = this.parseMap.get("width");
         DispatchAdapter.dims = new Point(Integer.parseInt(height), Integer.parseInt(width));
     }
+
+    /**
+     * Load the APaintObj.
+     *
+     * @param body the request body
+     * @return
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
 
     public APaintObj loadAPaintObj(String body) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         parseBody(body);
@@ -86,6 +97,14 @@ public class DispatchAdapter {
         return obj;
     }
 
+    /**
+     * Help method load a fish.
+     *
+     * @param switchable is switchable
+     * @param strategy   strategy
+     * @return a fish
+     */
+
     private APaintObj loadFish(boolean switchable, IUpdateStrategy strategy) {
         int locX = getRnd(60, DispatchAdapter.dims.x - 2 * 60);
         int locY = getRnd(60, DispatchAdapter.dims.y - 2 * 60);
@@ -94,6 +113,13 @@ public class DispatchAdapter {
         return new Fish(new Point2D.Double(locX, locY), new Point2D.Double(velX, velY), switchable, strategy, ++this.objID);
     }
 
+    /**
+     * Help method load a ball
+     *
+     * @param switchable is switchable
+     * @param strategy   strategy
+     * @return a ball
+     */
     private APaintObj loadBall(boolean switchable, IUpdateStrategy strategy) {
         int r = getRnd(15, 10);
         int locX = getRnd(r, DispatchAdapter.dims.x - 2 * r);
@@ -105,7 +131,7 @@ public class DispatchAdapter {
     }
 
     /**
-     * Call the update method on all the ball observers to update their position in the ball world.
+     * Call the update method on objects to update their position in the object world.
      */
     public Collection<APaintObj> updateBallWorld() {
         Collection<APaintObj> objs = this.objs.values();
@@ -131,8 +157,7 @@ public class DispatchAdapter {
 
 
     /**
-     * Switch the strategy for some of the switcher balls.
-     *
+     * Switch the strategy for some of the switcher balls/fish.
      */
     public APaintObj switchStrategy(String body) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         parseBody(body);
@@ -155,10 +180,10 @@ public class DispatchAdapter {
     }
 
     /**
-     * Find the ball given the ball id.
+     * Find the object given the object id.
      *
-     * @param id The REST request body of ball id
-     * @return the ball with corresponding id
+     * @param body the request body
+     * @return the object with corresponding id
      */
     public APaintObj getObj(String body) {
         parseBody(body);
@@ -166,9 +191,10 @@ public class DispatchAdapter {
         return this.objs.get(Integer.parseInt(id));
     }
 
-
     /**
-     * Remove all balls from listening for property change events for a particular property.
+     * Remove all or particular ball.
+     *
+     * @param body the request body
      */
     public void removeBalls(String body) {
         parseBody(body);
@@ -185,6 +211,12 @@ public class DispatchAdapter {
             obj.incrementCount(); // invalidate time event in PQ
         }
     }
+
+    /**
+     * Help method to parse the request body.
+     *
+     * @param body the request body
+     */
 
     private void parseBody(String body) {
         this.parseMap.clear();

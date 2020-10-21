@@ -1,7 +1,6 @@
 package edu.rice.comp504.model.strategy;
 
 import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
 
 /**
  * An interface for ball strategies that determine the ball behavior.
@@ -16,10 +15,10 @@ public interface IUpdateStrategy {
     Strategy getName();
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
-     * @return if the strategy change's ball's internal state randomly.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     boolean updateState(APaintObj context);
 }

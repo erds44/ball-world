@@ -4,6 +4,9 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 
 import java.awt.geom.Point2D;
 
+/**
+ * Swap changes the location of two objects.
+ */
 public class SwapLocation implements ICollisionResolution {
     private static ICollisionResolution singleton;
 
@@ -15,9 +18,9 @@ public class SwapLocation implements ICollisionResolution {
     }
 
     /**
-     * Only makes 1 change color strategy.
+     * Only makes 1 stop strategy.
      *
-     * @return The change color strategy
+     * @return The stop strategy
      */
     public static ICollisionResolution makeOnly() {
         if (singleton == null) {
@@ -26,6 +29,12 @@ public class SwapLocation implements ICollisionResolution {
         return singleton;
     }
 
+    /**
+     * Implementation on how to handle two APaintObj.
+     *
+     * @param a first object in collision
+     * @param b second object in collision
+     */
     @Override
     public void resolveCollision(APaintObj a, APaintObj b) {
         Point2D.Double loc = a.getLocation();

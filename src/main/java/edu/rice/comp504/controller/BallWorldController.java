@@ -52,7 +52,7 @@ public class BallWorldController {
             return gson.toJson(dis);
         });
 
-        get("/clear", (request, response) -> {
+        post("/clear", (request, response) -> {
             dis.removeBalls(request.body());
             return gson.toJson("remove");
         });

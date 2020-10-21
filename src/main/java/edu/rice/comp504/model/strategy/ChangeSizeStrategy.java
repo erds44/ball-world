@@ -7,14 +7,14 @@ import edu.rice.comp504.model.paintObj.Ball;
 import edu.rice.comp504.model.paintObj.Fish;
 
 /**
- * Change Size strategy changes ball's radius per update randomly.
+ * Change size of ball or fish randomly every 5 seconds.
  */
 public class ChangeSizeStrategy implements IUpdateStrategy {
     private int frequency;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * Public constructor.
      */
     public ChangeSizeStrategy() {
         this.frequency = 0;
@@ -33,9 +33,10 @@ public class ChangeSizeStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

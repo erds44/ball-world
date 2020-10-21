@@ -7,17 +7,25 @@ import edu.rice.comp504.model.paintObj.Fish;
 import java.awt.geom.Point2D;
 
 /**
- * Ball can rotate around a fixed point.
+ * Object has a chance to stop moving.
  */
 public class SuddenStopStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
     private Strategy name;
-    private int frequency;
+
+    /**
+     * Private constructor for singleton pattern.
+     */
 
     private SuddenStopStrategy() {
         this.name = Strategy.SUDDENSTOPSTRATEGY;
     }
 
+    /**
+     * Only makes 1 suddenStop strategy.
+     *
+     * @return The suddenStop strategy
+     */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
             singleton = new SuddenStopStrategy();
@@ -37,9 +45,10 @@ public class SuddenStopStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

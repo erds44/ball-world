@@ -4,10 +4,14 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 
 import java.awt.geom.Point2D;
 
+/**
+ * SpeedUp increases the velocity of the first object with max threshold.
+ */
 public class SpeedUp implements ICollisionResolution {
     private static ICollisionResolution singleton;
     private int increment;
     private int threshold;
+
     /**
      * private constructor for singleton pattern.
      */
@@ -17,9 +21,9 @@ public class SpeedUp implements ICollisionResolution {
     }
 
     /**
-     * Only makes 1 change color strategy.
+     * Only makes 1 speedUp strategy.
      *
-     * @return The change color strategy
+     * @return The speedUp strategy
      */
     public static ICollisionResolution makeOnly() {
         if (singleton == null) {
@@ -28,16 +32,28 @@ public class SpeedUp implements ICollisionResolution {
         return singleton;
     }
 
+    /**
+     * Implementation on how to handle two APaintObj.
+     *
+     * @param a first object in collision
+     * @param b second object in collision
+     */
     @Override
     public void resolveCollision(APaintObj a, APaintObj b) {
-       a.bounceOff(b);
-       double velX = incrementVelocity(a.getVelocity().x);
-       double velY = incrementVelocity(a.getVelocity().y);
-       a.setVelocity(new Point2D.Double(velX, velY));
+        a.bounceOff(b);
+        double velX = incrementVelocity(a.getVelocity().x);
+        double velY = incrementVelocity(a.getVelocity().y);
+        a.setVelocity(new Point2D.Double(velX, velY));
     }
 
-    private double incrementVelocity(double vel){
-        if(Math.abs(vel) < (this.threshold - this.increment)){
+    /**
+     * Help method increases the velocity.
+     *
+     * @param vel the velocity to be increased
+     * @return the increased velocity
+     */
+    private double incrementVelocity(double vel) {
+        if (Math.abs(vel) < (this.threshold - this.increment)) {
             vel += Math.signum(vel) * this.increment;
         }
         return vel;

@@ -5,7 +5,7 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import java.awt.geom.Point2D;
 
 /**
- * A Ball with black color and 0 velocity.
+ * A Ball with black color and 0 velocity or Fish with 0 velocity.
  */
 public class NullStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
@@ -19,9 +19,9 @@ public class NullStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Only makes 1 change color strategy.
+     * Only makes 1 null strategy.
      *
-     * @return The change color strategy
+     * @return The null strategy
      */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
@@ -41,9 +41,10 @@ public class NullStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

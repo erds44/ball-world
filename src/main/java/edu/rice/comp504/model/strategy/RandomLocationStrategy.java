@@ -6,21 +6,19 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import java.awt.geom.Point2D;
 
 /**
- * Change the color of a ball per update.
+ * Randomize the location every second.
  */
 public class RandomLocationStrategy implements IUpdateStrategy {
-    private static IUpdateStrategy singleton;
     private int frequency;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * Public constructor.
      */
     public RandomLocationStrategy() {
         this.frequency = 0;
         this.name = Strategy.RANDOMLOCATIONSTRATEGY;
     }
-
 
     /**
      * The name of the strategy.
@@ -33,13 +31,14 @@ public class RandomLocationStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {
-        if(++this.frequency % 10 == 0) {
+        if (++this.frequency % 10 == 0) {
             int locX = DispatchAdapter.getRnd(60, DispatchAdapter.dims.x - 2 * 60);
             int locY = DispatchAdapter.getRnd(60, DispatchAdapter.dims.y - 2 * 60);
             context.setLocation(new Point2D.Double(locX, locY));

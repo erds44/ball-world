@@ -6,14 +6,14 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import java.awt.geom.Point2D;
 
 /**
- * Add gravity for a ball.
+ * Randomize the velocity of a object every second.
  */
 public class RandomVelocityStrategy implements IUpdateStrategy {
     private Strategy name;
     private int frequency;
 
     /**
-     * private constructor for singleton pattern.
+     * Public constructor.
      */
     public RandomVelocityStrategy() {
         this.name = Strategy.RANDOMVELOCITYSTRATEGY;
@@ -32,13 +32,14 @@ public class RandomVelocityStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {
-        if(++this.frequency % 10 == 0) {
+        if (++this.frequency % 10 == 0) {
             double velX = Math.signum(context.getVelocity().x) * DispatchAdapter.getRnd(1, 10);
             double velY = Math.signum(context.getVelocity().y) * DispatchAdapter.getRnd(1, 10);
             context.setVelocity(new Point2D.Double(velX, velY));

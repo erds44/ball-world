@@ -12,9 +12,13 @@ import edu.rice.comp504.model.strategy.Strategy;
 
 import java.util.*;
 
-/**
- * Collision system used for ball-ball collision and ball-wall collision resolution.
- */
+/***************************************************************************************
+ *    Title: MinPQ.java
+ *    Author: Robert Sedgewick & Kevin Wayne
+ *    Date: Oct 15 2020
+ *    Availability: https://algs4.cs.princeton.edu/61event/MinPQ.java.html\
+ *    Collision system used for any object collision management.
+ ***************************************************************************************/
 public class CollisionSystem {
     private static CollisionSystem singleton;
     private PriorityQueue<Event> minPQ;
@@ -62,16 +66,15 @@ public class CollisionSystem {
     /**
      * Predict future collision events.
      *
-     * @param objs all balls in canvas
-     * @param a    the ball to check collision
+     * @param objs all objects in canvas
+     * @param a    the object to check collision
      */
-    // updates priority queue with all new events for ball a
     public void predict(Collection<APaintObj> objs, APaintObj a) {
         if (a == null) {
             return;
         }
-        if (!nonCollidableStrategy.contains(a.getStrategy().getName()) && !(a instanceof Fish)) {
-            // ball - ball collisions
+        // obj - obj collisions
+        if (!nonCollidableStrategy.contains(a.getStrategy().getName()) && !(a instanceof Fish)) { // do not count fish in collision
             for (APaintObj obj : objs) {
                 if (!nonCollidableStrategy.contains(obj.getStrategy().getName()) && !(obj instanceof Fish)) {
                     double dt = a.timeToHit(obj);
@@ -80,7 +83,7 @@ public class CollisionSystem {
             }
 
         }
-        // ball - wall collisions
+        // obj - wall collisions
         double dtX = a.timeToHitVerticalWall();
         double dtY = a.timeToHitHorizontalWall();
         this.minPQ.add(new Event(time + dtX, a, null));
@@ -88,11 +91,12 @@ public class CollisionSystem {
     }
 
     /**
-     * Simulates the system of particles for the specified amount of time.
+     * Update all the ball location after collision (if applicable).
+     *
+     * @param objs all the objects in the canvas
      */
     public synchronized void update(Collection<APaintObj> objs) {
         double limit = this.time + 1;
-
         Event e = this.minPQ.peek();
         while (e != null && e.getTime() <= limit) {
             e = this.minPQ.poll();
@@ -105,22 +109,21 @@ public class CollisionSystem {
             }
             e = this.minPQ.peek();
         }
-        for (APaintObj ball : objs) {
+        for (APaintObj ball : objs) { // in case the event time in PQ does not reach the limit
             ball.updateLocation(limit - time);
         }
         this.time = limit;
         objStrategyUpdate(objs);
     }
 
-    private void objStrategyUpdate(Collection<APaintObj> objs) {
-        for (APaintObj obj : objs) {
-            if (obj.getStrategy().updateState(obj)) {
-                predict(objs, obj); //re-predict time event if velocity or radius changes
-            }
-        }
-    }
 
-
+    /**
+     * The resolveCollision resolves the collision based on the object type.
+     *
+     * @param objs all the objects in canvas
+     * @param a    first object
+     * @param b    second object
+     */
     private void resolveCollision(Collection<APaintObj> objs, APaintObj a, APaintObj b) {
         if (a != null && b != null) {
             handleCollision(a, b);                            // obj-obj collision
@@ -129,19 +132,17 @@ public class CollisionSystem {
         } else if (b != null) {
             HorizontalWall.makeOnly().resolveCollision(b, a); // obj-wall collision
         }
+        // re-predict time event since collision may change velocity, location, or radius.
         predict(objs, a);
         predict(objs, b);
     }
 
-    public void clear() {
-        this.minPQ.clear();
-        this.time = 0;
-    }
-
-    public double getTime() {
-        return this.time;
-    }
-
+    /**
+     * Help method for resolveCollision for the specific case where two objects are not null.
+     *
+     * @param a fist object
+     * @param b second object
+     */
     public void handleCollision(APaintObj a, APaintObj b) {
         Object na = a.getName();
         Object nb = b.getName();
@@ -154,5 +155,27 @@ public class CollisionSystem {
         }
 
     }
+
+    /**
+     * Update the object strategy if applicable, like change color, location, etc.
+     *
+     * @param objs all the objects in canvas
+     */
+    private void objStrategyUpdate(Collection<APaintObj> objs) {
+        for (APaintObj obj : objs) {
+            if (obj.getStrategy().updateState(obj)) {
+                predict(objs, obj);  //re-predict time event if velocity or radius changes
+            }
+        }
+    }
+
+    /**
+     * Clear the PQ and reset time, used for clear canvas functionality.
+     */
+    public void clear() {
+        this.minPQ.clear();
+        this.time = 0;
+    }
+
 
 }

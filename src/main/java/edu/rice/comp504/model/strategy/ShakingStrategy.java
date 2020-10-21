@@ -5,15 +5,14 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import java.awt.geom.Point2D;
 
 /**
- * Add up and down displacement for a horizontal moving ball.
+ * Add up and down displacement for a horizontal moving object.
  */
 public class ShakingStrategy implements IUpdateStrategy {
-    private static IUpdateStrategy singleton;
     private int dy;
     private Strategy name;
 
     /**
-     * private constructor for singleton pattern.
+     * Public constructor.
      */
     public ShakingStrategy() {
         this.dy = 10;
@@ -32,9 +31,10 @@ public class ShakingStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {

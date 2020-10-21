@@ -4,7 +4,7 @@ import edu.rice.comp504.model.paintObj.APaintObj;
 import edu.rice.comp504.model.paintObj.Fish;
 
 /**
- * Ball can rotate around a fixed point.
+ * Fish can swing up and down.
  */
 public class SwingStrategy implements IUpdateStrategy {
     private double rotateAngle;
@@ -12,7 +12,7 @@ public class SwingStrategy implements IUpdateStrategy {
     private int frequency;
 
     /**
-     * private constructor for singleton pattern.
+     * Public constructor.
      */
     public SwingStrategy() {
         this.rotateAngle = 20d / 180 * Math.PI;
@@ -32,17 +32,18 @@ public class SwingStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Update the state of the ball.
+     * Update the state of the object.
      *
-     * @param context The ball.
+     * @param context The object
+     * @return if the strategy change's object's internal state randomly
      */
     @Override
     public boolean updateState(APaintObj context) {
         if (context instanceof Fish) {
             Fish fish = (Fish) context;
-            if(++this.frequency % 2 == 0) {
+            if (++this.frequency % 2 == 0) {
                 fish.setAngle(-1 * this.rotateAngle);
-            }else{
+            } else {
                 fish.setAngle(0);
             }
         }

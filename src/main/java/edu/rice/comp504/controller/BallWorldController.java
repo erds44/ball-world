@@ -28,17 +28,17 @@ public class BallWorldController {
         DispatchAdapter dis = new DispatchAdapter();
 
         post("/load", (request, response) -> {
-            APaintObj obj = dis.loadAPaintObj(request.queryParams("object"), request.queryParams("switchable"), request.queryParams("strategy"));
+            APaintObj obj = dis.loadAPaintObj(request.body());
             return gson.toJson(obj);
         });
 
         post("/switch", (request, response) -> {
-            APaintObj obj = dis.switchStrategy(request.queryParams("id"), request.queryParams("strategy"));
+            APaintObj obj = dis.switchStrategy(request.body());
             return gson.toJson(obj);
         });
 
         post("/strategy", (request, response) -> {
-            APaintObj obj = dis.getObj(request.queryParams("id"));
+            APaintObj obj = dis.getObj(request.body());
             return gson.toJson(obj);
         });
 
@@ -48,13 +48,12 @@ public class BallWorldController {
         });
 
         post("/canvas/dims", (request, response) -> {
-            String dim = request.queryParams("height") + " " + request.queryParams("width");
-            dis.setCanvasDims(dim);
-            return gson.toJson(dim);
+            dis.setCanvasDims(request.body());
+            return gson.toJson(dis);
         });
 
         get("/clear", (request, response) -> {
-            dis.removeBalls(request.queryParams("id"));
+            dis.removeBalls(request.body());
             return gson.toJson("remove");
         });
 

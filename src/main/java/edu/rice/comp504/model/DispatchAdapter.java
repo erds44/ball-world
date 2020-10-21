@@ -22,6 +22,7 @@ public class DispatchAdapter {
     private int objID = 0;
     public static Point dims;
     public static String[] availColors = {"red", "blue", "green", "black", "purple", "orange", "gray", "brown"};
+    private Map<String, String> parseMap = new HashMap<>();
     private Map<Integer, APaintObj> objs = new HashMap<>();
     private Map<Integer, APaintObj> newObjs = new HashMap<>();
     public static Map<String, IUpdateStrategy> map = new HashMap<>();
@@ -54,19 +55,19 @@ public class DispatchAdapter {
      *
      * @param dims The canvas width (x) and height (y).
      */
-    public static void setCanvasDims(String dims) {
-        try {
-            String[] split = dims.split("\\s+"); // assume the string is in the format "800 600", so split by space
-            DispatchAdapter.dims = new Point(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-        } catch (RuntimeException e) {
-            throw e;
-        }
+    public void setCanvasDims(String body) {
+        parseBody(body);
+        String height = this.parseMap.get("height");
+        String width = this.parseMap.get("width");
+        DispatchAdapter.dims = new Point(Integer.parseInt(height), Integer.parseInt(width));
     }
 
-    public APaintObj loadAPaintObj(String type, String switchable, String strategy) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public APaintObj loadAPaintObj(String body) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        parseBody(body);
+        String strategy = this.parseMap.get("strategy");
         APaintObj obj;
-        IUpdateStrategy s = this.map.get(strategy);
-        boolean b = Boolean.parseBoolean(switchable);
+        IUpdateStrategy s = map.get(strategy);
+        boolean b = Boolean.parseBoolean(this.parseMap.get("switchable"));
         if (s == null) {    // In case a strategy is not in the dictionary
             try {
                 Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
@@ -76,7 +77,7 @@ public class DispatchAdapter {
                 s = NullStrategy.makeStrategy();
             }
         }
-        if (type.equals("Fish")) {
+        if (this.parseMap.get("object").equals("Fish")) {
             obj = loadFish(b, s);
         } else {
             obj = loadBall(b, s);
@@ -132,11 +133,12 @@ public class DispatchAdapter {
     /**
      * Switch the strategy for some of the switcher balls.
      *
-     * @param id       Ball id
-     * @param strategy strategy to change for the ball
      */
-    public APaintObj switchStrategy(String id, String strategy) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        IUpdateStrategy s = this.map.get(strategy);
+    public APaintObj switchStrategy(String body) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        parseBody(body);
+        String strategy = this.parseMap.get("strategy");
+        String id = this.parseMap.get("id");
+        IUpdateStrategy s = map.get(strategy);
         if (s == null) {    // In case a strategy is not in the dictionary
             try {
                 Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
@@ -158,7 +160,9 @@ public class DispatchAdapter {
      * @param id The REST request body of ball id
      * @return the ball with corresponding id
      */
-    public APaintObj getObj(String id) {
+    public APaintObj getObj(String body) {
+        parseBody(body);
+        String id = this.parseMap.get("id");
         return this.objs.get(Integer.parseInt(id));
     }
 
@@ -166,7 +170,9 @@ public class DispatchAdapter {
     /**
      * Remove all balls from listening for property change events for a particular property.
      */
-    public void removeBalls(String num) {
+    public void removeBalls(String body) {
+        parseBody(body);
+        String num = this.parseMap.get("id");
         int id = Integer.parseInt(num);
         if (id == -1) {
             this.newObjs.clear();
@@ -177,6 +183,16 @@ public class DispatchAdapter {
         } else {
             APaintObj obj = this.objs.remove(id);
             obj.incrementCount(); // invalidate time event in PQ
+        }
+    }
+
+    private void parseBody(String body) {
+        this.parseMap.clear();
+        String[] params = body.split("&");
+        for (String param : params) {
+            String name = param.split("=")[0];
+            String value = param.split("=")[1];
+            this.parseMap.put(name, value);
         }
     }
 

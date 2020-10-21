@@ -1,12 +1,16 @@
 package edu.rice.comp504.model.collision;
 
+import edu.rice.comp504.model.collision.handler.BallCollisionHandler;
+import edu.rice.comp504.model.collision.handler.FishCollisionHandler;
+import edu.rice.comp504.model.collision.handler.ICollisionHandler;
+import edu.rice.comp504.model.collision.resolver.HorizontalWall;
+import edu.rice.comp504.model.collision.resolver.VerticalWall;
 import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Fish;
+import edu.rice.comp504.model.paintObj.Object;
 import edu.rice.comp504.model.strategy.Strategy;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * Collision system used for ball-ball collision and ball-wall collision resolution.
@@ -15,11 +19,23 @@ public class CollisionSystem {
     private static CollisionSystem singleton;
     private PriorityQueue<Event> minPQ;
     private double time;
-    private Map<Map.Entry<Strategy, Strategy>, ICollisionHandler> map = new HashMap<>();
+    private Map<Map.Entry<Object, Object>, ICollisionHandler> map = new HashMap<>();
 
     {
+        map.put(Map.entry(Object.Ball, Object.Ball), BallCollisionHandler.makeOnly());
+        map.put(Map.entry(Object.Ball, Object.Fish), FishCollisionHandler.makeOnly());
+        map.put(Map.entry(Object.Fish, Object.Fish), FishCollisionHandler.makeOnly());
 
+    }
 
+    private final ArrayList<Strategy> nonCollidableStrategy = new ArrayList<>();
+
+    {
+        nonCollidableStrategy.add(Strategy.NULLSTRATEGY);
+        nonCollidableStrategy.add(Strategy.RANDOMLOCATIONSTRATEGY);
+        nonCollidableStrategy.add(Strategy.RANDOMWALKSTRATEGY);
+        nonCollidableStrategy.add(Strategy.ROTATINGSTRATEGY);
+        nonCollidableStrategy.add(Strategy.SHAKINGSTRATEGY);
     }
 
     /**
@@ -54,11 +70,16 @@ public class CollisionSystem {
         if (a == null) {
             return;
         }
-        // ball - ball collisions
-//        for (APaintObj obj : objs) {
-//            double dt = a.timeToHit(obj);
-//            this.minPQ.add(new Event(time + dt, a, obj));
-//        }
+        if (!nonCollidableStrategy.contains(a.getStrategy().getName()) && !(a instanceof Fish)) {
+            // ball - ball collisions
+            for (APaintObj obj : objs) {
+                if (!nonCollidableStrategy.contains(obj.getStrategy().getName()) && !(obj instanceof Fish)) {
+                    double dt = a.timeToHit(obj);
+                    this.minPQ.add(new Event(time + dt, a, obj));
+                }
+            }
+
+        }
         // ball - wall collisions
         double dtX = a.timeToHitVerticalWall();
         double dtY = a.timeToHitHorizontalWall();
@@ -100,24 +121,13 @@ public class CollisionSystem {
     }
 
 
-
     private void resolveCollision(Collection<APaintObj> objs, APaintObj a, APaintObj b) {
         if (a != null && b != null) {
-            ICollisionHandler handler = map.get(Map.entry(a.getStrategy().getName(), b.getStrategy().getName()));
-            if (handler == null) {
-                handler = map.get(Map.entry(b.getStrategy().getName(), a.getStrategy().getName()));
-                if (handler == null) {
-                    BounceOff.makeOnly().handleCollision(a, b); //default handler if no resolution found
-                } else {
-                    handler.handleCollision(b, a);
-                }
-            } else {
-                handler.handleCollision(a, b);
-            }
-        } else if (a != null && b == null) {
-            VerticalWall.makeOnly().handleCollision(a, b);   // particle-wall collision
-        } else if (a == null && b != null) {
-            HorizontalWall.makeOnly().handleCollision(b, a); // particle-wall collision
+            handleCollision(a, b);                            // obj-obj collision
+        } else if (a != null) {
+            VerticalWall.makeOnly().resolveCollision(a, b);   // obj-wall collision
+        } else if (b != null) {
+            HorizontalWall.makeOnly().resolveCollision(b, a); // obj-wall collision
         }
         predict(objs, a);
         predict(objs, b);
@@ -132,5 +142,17 @@ public class CollisionSystem {
         return this.time;
     }
 
+    public void handleCollision(APaintObj a, APaintObj b) {
+        Object na = a.getName();
+        Object nb = b.getName();
+        ICollisionHandler handler = map.get(Map.entry(na, nb));
+        if (handler == null) {
+            handler = map.get(Map.entry(nb, na));
+            handler.handleCollision(b, a);
+        } else {
+            handler.handleCollision(a, b);
+        }
+
+    }
 
 }

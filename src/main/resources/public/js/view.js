@@ -44,14 +44,14 @@ function createApp(canvas) {
 
     };
 
-    let drawFish = function (x, y, scaleX, scaleY, width, height, angel, id) {
+    let drawFish = function (x, y, scaleX, scaleY, width, height, angle, id) {
         c.save();
         // Translate to the center point of our image
         let centerX = x + Math.sign(scaleX) * width / 2;
         let centerY = y + height / 2;
         c.translate(centerX, centerY);
         // Perform the rotation
-        c.rotate(angel);
+        c.rotate(angle);
         // Translate back to the top left of our image
         c.translate(-centerX, -centerY);
         c.scale(scaleX, scaleY);
@@ -90,6 +90,8 @@ window.onload = function () {
     $("#btn-load").click(loadObject);
     $("#btn-clear").click(clear);
     $("#btn-switchStrategy").click(switchStrategy);
+    $("#btn-remove").click(removeObj)
+    $("#btn-rule").click(myFunction)
 };
 
 window.onbeforeunload = function () {
@@ -154,44 +156,28 @@ function switchStrategy() {
     }, "json");
 }
 
-// /**
-//  * Set available ball strategy.
-//  */
-// function setStrategy(id) {
-//     if (id != "balls") {
-//         $.post("/strategy", {id: id}, function (data) {
-//             $("#availableStrategy option").remove();
-//             if (data.switchable == true) {
-//                 $('#btn-switchStrategy').removeAttr('disabled');
-//                 for (let i = 0; i < ballStrategies.length; i++) {
-//                     if (data.strategy.name != ballStrategies[i]) {
-//                         $("#availableStrategy").append(new Option(ballStrategies[i], ballStrategies[i]));
-//                     }
-//                 }
-//             } else {
-//                 $('#btn-switchStrategy').attr('disabled', true);
-//                 $("#availableStrategy").append(new Option("--- No Available Strategy ---", "noAvailableStrategy"))
-//             }
-//         }, "json");
-//     } else {
-//         $('#btn-switchStrategy').attr('disabled', true);
-//         $("#availableStrategy option").remove();
-//         $("#availableStrategy").append(new Option("--- No Available Strategy ---", "noAvailableStrategy"))
-//     }
-// }
-
 function updateBallWorld() {
     $.get("/update", function (data) {
         app.clear();
+        let str = "";
         data.forEach(function (data) {
             if (data.name === "Ball") {
                 app.drawCircle(data.loc.x, data.loc.y, data.radius, data.color, data.id);
             } else {
-                app.drawFish(data.loc.x, data.loc.y, data.scale.x, data.scale.y, data.width, data.height, data.angel, data.id);
+                app.drawFish(data.loc.x, data.loc.y, data.scale.x, data.scale.y, data.width, data.height, data.angle, data.id);
             }
-        });
+            if(data.switchable === true){
+                str += "<p>" + data.name + data.id + ": " + data.strategy.name + "</p>";
+            }else {
+                str += "<p style=\"color:red;\">" + data.name + data.id + ": " + data.strategy.name + "</p>";
+            }
+
+        })
+        $("#ballInfo").html(str);
     }, "json");
+
 }
+
 
 /**
  * Pass along the canvas dimensions
@@ -204,20 +190,14 @@ function canvasDims() {
  * Clear the canvas
  */
 function clear() {
-    $.get("/clear");
-    initSwitch();
-    app.clear();
-}
-
-/**
- * Initialize the switch drop downs
- */
-function initSwitch() {
-    $('#switchableBalls option').remove();
-    $("#switchableBalls").append(new Option("--- Balls ---", "balls"))
+    $.get("/clear", {id: -1});
+    $('#availableObjs option').remove();
+    $("#availableObjs").append(new Option("--- Objects ---", "null"))
     $("#availableStrategy option").remove();
-    $("#availableStrategy").append(new Option("--- Available Strategies ---", "availableStrategy"))
+    $("#availableStrategy").append(new Option("--- Available Strategies ---", "null"))
     $("#btn-switchStrategy").attr("disabled", true);
+    $("#btn-remove").attr("disabled", true);
+    app.clear();
 }
 
 function initializeMap() {
@@ -241,6 +221,8 @@ function initializeMap() {
     fishStrategiesMap.set("RandomLocationStrategy", "Random Location Strategy - randomize location every update");
     fishStrategiesMap.set("RandomWalkStrategy", "Random Walk Strategy - reverse direction with equal probability");
     fishStrategiesMap.set("RandomVelocityStrategy", "Random Velocity Strategy - random velocity every second");
+    fishStrategiesMap.set("SwingStrategy", "Swing Strategy - swing 20 degree every update");
+    fishStrategiesMap.set("SuddenStopStrategy", "Sudden Stop Strategy - sudden stop moving with 30% chance");
 }
 
 function setUpUI() {
@@ -251,12 +233,14 @@ function setUpUI() {
     $("#availableObjs").change(function () {
         appendSwitchStrategy();
     });
+
 }
 
 function appendSwitchStrategy() {
     let id = $("#availableObjs").find(":selected").val();
     $("#availableStrategy option").remove();
     if (id !== "null") {
+        $("#btn-remove").removeAttr("disabled");
         $.post("/strategy", {id: id}, function (data) {
             if (data.switchable === true) {
                 $('#btn-switchStrategy').removeAttr('disabled');
@@ -279,9 +263,11 @@ function appendSwitchStrategy() {
     } else {
         $('#btn-switchStrategy').attr('disabled', true);
         $("#availableStrategy").append(new Option("--- No Available Strategy ---", "null"))
+        $('#btn-remove').attr('disabled', true);
     }
 }
-function updateAvailableStrategy(name, strategy){
+
+function updateAvailableStrategy(name, strategy) {
     $("#availableStrategy option").remove();
     let map;
     if (name === "Ball") {
@@ -294,4 +280,17 @@ function updateAvailableStrategy(name, strategy){
             $("#availableStrategy").append(new Option(value, key));
         }
     }
+}
+
+function removeObj() {
+    let id = $("#availableObjs").find(":selected")
+    $.get("/clear", {id: id.val()});
+    id.remove();
+    appendSwitchStrategy();
+}
+
+function myFunction() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+
 }

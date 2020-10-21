@@ -12,7 +12,7 @@ import java.awt.geom.Point2D;
  */
 public class Ball implements APaintObj {
     public static final double INFINITY = Double.POSITIVE_INFINITY;
-    private String name = "Ball";
+    private Object name;
     private Point2D.Double loc;
     private int radius;
     private Point2D.Double vel;
@@ -40,10 +40,11 @@ public class Ball implements APaintObj {
         this.color = color;
         this.switchable = switchable;
         this.strategy = strategy;
-        //this.strategy.updateState(this);
+        this.strategy.updateState(this);
         this.id = id;
         this.count = 0;
         this.mass = radius * 0.1;
+        this.name = Object.Ball;
     }
 
     /**
@@ -320,6 +321,10 @@ public class Ball implements APaintObj {
 
     public double getMass() {
         return this.mass;
+    }
+
+    public Object getName(){
+        return this.name;
     }
 
 

@@ -5,13 +5,89 @@
     <title>Hello</title>
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/view.js"></script>
+    <style>
+        /* Popup container - can be anything you want */
+        .popup {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* The actual popup */
+        .popup .popuptext {
+            visibility: hidden;
+            width: 400px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -210px;
+        }
+
+        /* Popup arrow */
+        .popup .popuptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        /* Toggle this class - hide and show the popup */
+        .popup .show {
+            visibility: visible;
+            -webkit-animation: fadeIn 1s;
+            animation: fadeIn 1s;
+        }
+
+        /* Add animation (fade in the popup) */
+        @-webkit-keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
+
 <body>
 <div style="top:3em; left:0em;">
-    <div>
-        <canvas width="800" height="800" style="border: 1px solid #000000 ;display:block;margin:auto"></canvas>
+
+    <div style="display: flex">
+        <div id="ballInfo" style="width: 100px; height: 800px; flex:20%; overflow: auto"></div>
+        <div style="flex:60%;">
+            <canvas width="800" height="800" style="border: 1px solid #000000 ;display:block;margin:auto"></canvas>
+        </div>
+        <div style="flex:20%;"></div>
+
     </div>
-    <div style="display: flex; justify-content: center;margin-top: 20px;">
+
+
+    <div style="display: flex; justify-content: center;margin-top: 20px; ">
         <select id="switchable">
             <option value="true" selected>Switchable</option>
             <option value="false">Nonswitchable</option>
@@ -23,19 +99,55 @@
         <select id="strategy"></select>
         <button id="btn-load">Make Object</button>
         <button id="btn-clear">Clear</button>
+        <button class="popup" id="popup" onclick="myFunction()" style="">Rule
+            <text class="popuptext" id="myPopup">
+                Non-Collidable Strategies:
+                <ul>
+                    <li>Null</li>
+                    <li>Shaking</li>
+                    <li>Rotating</li>
+                    <li>RandomWalk</li>
+                    <li>RandomLocation</li>
+                </ul>
+
+                <br>Ball-Ball Collision:
+                <ol>
+                    <li><span>Straight vs Straight:<br>both change color</span></li>
+                    <li>
+                        <span>Straight vs ReverseVelocity:<br>one ball set the same color as the larger radius ball</span>
+                    </li>
+                    <li><span>Straight vs ChangeColor:<br>straight ball shrink radius (r >= 10)</span></li>
+                    <li><span>Straight vs ChangeMass:<br>straight ball speeds up (|v| <= 30)</span></li>
+                    <li><span>Straight vs ChangeSize:<br>straight ball slows down (|v| >= 10)</span></li>
+                    <li>
+                        <span>ChangeMass vs ChangeColor:<br>changeMass ball sticks to ChangeColor (v_mass = v_color)</span>
+                    </li>
+                    <li><span>ChangeMass vs ChangeSize:<br>changeMass ball absorbs 10% radius of change size ball (10 <= r <= 30)</span>
+                    </li>
+                    <li><span>ChangeSize vs RandomVelocity:<br>changeSize ball's mass is randomized</span></li>
+                    <li><span>ChangSize vs ChangeColor:<br>changeSize stops (v = 0)</span></li>
+                    <li><span>ChangeSize vs ReverseVelocity:<br>two balls swap location</span></li>
+                </ol>
+
+            </text>
+        </button>
+
+
     </div>
-    <div style="display: flex; justify-content: center;margin-top: 10px;">
-        <b>It might take seconds for switch strategy to be effective due to heroku lag</b>
-    </div>
-    <div style="display: flex; justify-content: center;margin-top: 10px;">
-        <select id="availableObjs">
-            <option value="null">--- Objects ---</option>
-        </select>
-        <select id="availableStrategy">
-            <option value="null">--- Available Strategies ---</option>
-        </select>
-        <button id="btn-switchStrategy" disabled>Switch Strategy</button>
-    </div>
+</div>
+<div style="display: flex; justify-content: center;margin-top: 10px;">
+    <b>It might take seconds for switch strategy to be effective due to heroku lag</b>
+</div>
+<div style="display: flex; justify-content: center;margin-top: 10px;">
+    <select id="availableObjs">
+        <option value="null">--- Objects ---</option>
+    </select>
+    <select id="availableStrategy">
+        <option value="null">--- Available Strategies ---</option>
+    </select>
+    <button id="btn-switchStrategy" disabled>Switch Strategy</button>
+    <button id="btn-remove" disabled>Remove</button>
+</div>
 
 
 </div>

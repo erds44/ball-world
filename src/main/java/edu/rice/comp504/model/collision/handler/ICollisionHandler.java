@@ -1,4 +1,4 @@
-package edu.rice.comp504.model.collision;
+package edu.rice.comp504.model.collision.handler;
 
 import edu.rice.comp504.model.paintObj.APaintObj;
 

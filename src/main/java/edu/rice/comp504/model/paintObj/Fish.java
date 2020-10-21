@@ -2,12 +2,13 @@ package edu.rice.comp504.model.paintObj;
 
 import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
+import edu.rice.comp504.model.strategy.RotatingStrategy;
 import edu.rice.comp504.model.strategy.Strategy;
 
 import java.awt.geom.Point2D;
 
 public class Fish implements APaintObj {
-    private String name = "Fish";
+    private Object name;
     private Point2D.Double loc;
     private Point2D.Double vel;
     private IUpdateStrategy strategy;
@@ -19,7 +20,8 @@ public class Fish implements APaintObj {
     private double height;
     private String color;
     private double mass;
-    private double angel;
+    private double angle;
+    private boolean isStop;
 
     public Fish(Point2D.Double loc, Point2D.Double vel, boolean switchable, IUpdateStrategy strategy, int id) {
         this.loc = loc;
@@ -37,7 +39,10 @@ public class Fish implements APaintObj {
         this.width = 60;
         this.height = 50;
         this.color = "black";
-        this.angel = 0;
+        this.angle = 0;
+        this.isStop = false;
+        this.strategy.updateState(this);
+        this.name = Object.Fish;
     }
 
 
@@ -46,7 +51,7 @@ public class Fish implements APaintObj {
      */
     @Override
     public void updateLocation(double time) {
-        if (this.strategy.getName() != Strategy.ROTATINGSTRATEGY && this.strategy.getName() != Strategy.RANDOMLOCATIONSTRATEGY) {
+        if (this.strategy.getName() != Strategy.ROTATINGSTRATEGY && this.strategy.getName() != Strategy.RANDOMLOCATIONSTRATEGY && !isStop) {
             double x = this.getLocation().x + this.getVelocity().x * time;
             double y = this.getLocation().y + this.getVelocity().y * time;
             this.setLocation(new Point2D.Double(x, y));
@@ -90,11 +95,13 @@ public class Fish implements APaintObj {
      */
     @Override
     public void setVelocity(Point2D.Double vel) {
-        if (Math.signum(this.vel.x) != Math.signum(vel.x) && Math.signum(vel.x) != 0) {
-            this.scale = new Point2D.Double(this.scale.x * -1, this.scale.y);
+        if (vel.x > 0) {
+            this.scale = new Point2D.Double(-Math.abs(this.scale.x), this.scale.y);
+        } else if (vel.x < 0) {
+            this.scale = new Point2D.Double(Math.abs(this.scale.x), this.scale.y);
         }
-        incrementCount();
         this.vel = vel;
+        incrementCount();
     }
 
     /**
@@ -124,7 +131,24 @@ public class Fish implements APaintObj {
      */
     @Override
     public void setStrategy(IUpdateStrategy strategy) {
-        this.strategy = strategy;
+        if (switchable) {
+            switch (this.getStrategy().getName()) {
+                case ROTATINGSTRATEGY:
+                    ((RotatingStrategy) this.strategy).notRotating(this.getID());
+                    this.angle = 0;
+                    break;
+                case SWINGSTRATEGY:
+                    this.angle = 0;
+                    break;
+                case NULLSTRATEGY:
+                    this.setVelocity(new Point2D.Double(DispatchAdapter.getRnd(-10, 20), DispatchAdapter.getRnd(-10, 20)));
+                    break;
+                case SUDDENSTOPSTRATEGY:
+                    this.isStop = false;
+                    break;
+            }
+            this.strategy = strategy;
+        }
     }
 
     /**
@@ -229,7 +253,7 @@ public class Fish implements APaintObj {
      *
      * @return ball color
      */
-    @Override
+
     public String getColor() {
         return this.color;
     }
@@ -239,17 +263,16 @@ public class Fish implements APaintObj {
      *
      * @param c The new ball color
      */
-    @Override
+
     public void setColor(String c) {
         this.color = c;
     }
 
-    @Override
+
     public void setMass(double mass) {
         this.mass = mass;
     }
 
-    @Override
     public double getMass() {
         return this.mass;
     }
@@ -271,11 +294,23 @@ public class Fish implements APaintObj {
         return this.height;
     }
 
-    public double getAngel() {
-        return this.angel;
+    public double getAngle() {
+        return this.angle;
     }
 
-    public void setAngel(double angel) {
-        this.angel = angel;
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+
+    public void setStop(boolean stop) {
+        this.isStop = stop;
+    }
+
+    public double getScale() {
+        return this.scale.x;
+    }
+
+    public Object getName() {
+        return this.name;
     }
 }

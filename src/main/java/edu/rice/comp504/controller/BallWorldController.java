@@ -54,7 +54,7 @@ public class BallWorldController {
         });
 
         get("/clear", (request, response) -> {
-            dis.removeBalls(-1);
+            dis.removeBalls(request.queryParams("id"));
             return gson.toJson("remove");
         });
 

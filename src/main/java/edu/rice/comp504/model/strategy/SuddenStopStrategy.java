@@ -1,34 +1,30 @@
 package edu.rice.comp504.model.strategy;
 
+import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintObj.Fish;
 
 import java.awt.geom.Point2D;
 
 /**
- * Horizontal strategy that makes a ball move horizontally.
+ * Ball can rotate around a fixed point.
  */
-public class StraightStrategy implements IUpdateStrategy {
+public class SuddenStopStrategy implements IUpdateStrategy {
     private static IUpdateStrategy singleton;
     private Strategy name;
+    private int frequency;
 
-    /**
-     * Private Constructor for singleton pattern.
-     */
-    private StraightStrategy() {
-        this.name = Strategy.STRAIGHTSTRATEGY;
+    private SuddenStopStrategy() {
+        this.name = Strategy.SUDDENSTOPSTRATEGY;
     }
 
-    /**
-     * Only makes 1 horizontal strategy.
-     *
-     * @return The horizontal strategy
-     */
     public static IUpdateStrategy makeStrategy() {
         if (singleton == null) {
-            singleton = new StraightStrategy();
+            singleton = new SuddenStopStrategy();
         }
         return singleton;
     }
+
 
     /**
      * The name of the strategy.
@@ -41,12 +37,18 @@ public class StraightStrategy implements IUpdateStrategy {
     }
 
     /**
-     * Set the y velocity of a ball to 0 if applicable.
+     * Update the state of the ball.
      *
      * @param context The ball.
      */
     @Override
     public boolean updateState(APaintObj context) {
-        return false;
+        if (DispatchAdapter.getRnd(1, 10) < 4) {
+            ((Fish) context).setStop(true);
+        } else {
+            ((Fish) context).setStop(false);
+        }
+        context.incrementCount();
+        return true;
     }
 }

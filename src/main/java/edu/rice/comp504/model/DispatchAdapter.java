@@ -28,17 +28,10 @@ public class DispatchAdapter {
 
     {
         map.put("StraightStrategy", StraightStrategy.makeStrategy());
-        // map.put("ChangeColorStrategy", new ChangeColorStrategy());
-        // map.put("ChangeSizeStrategy", new ChangeSizeStrategy());
-        //map.put("GravityStrategy", GravityStrategy.makeStrategy());
-        // map.put("ShakingStrategy", new ShakingStrategy());
-        //map.put("ChangeColorAfterCollisionStrategy", new ChangeMassStrategy());
         map.put("NullStrategy", NullStrategy.makeStrategy());
         map.put("RotatingStrategy", RotatingStrategy.makeStrategy());
-        //map.put("ReverseVelocityStrategy", new ReverseVelocityStrategy());
-        //map.put("ChangeMassStrategy", new ChangeMassStrategy());
-        // map.put("RandomLocationStrategy", new RandomLocationStrategy());
         map.put("RandomWalkStrategy", RandomWalkStrategy.makeStrategy());
+        map.put("SuddenStopStrategy", SuddenStopStrategy.makeStrategy());
     }
 
     /**
@@ -173,7 +166,8 @@ public class DispatchAdapter {
     /**
      * Remove all balls from listening for property change events for a particular property.
      */
-    public void removeBalls(int id) {
+    public void removeBalls(String num) {
+        int id = Integer.parseInt(num);
         if (id == -1) {
             this.newObjs.clear();
             this.objs.clear();

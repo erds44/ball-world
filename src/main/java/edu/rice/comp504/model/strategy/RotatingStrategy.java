@@ -61,7 +61,6 @@ public class RotatingStrategy implements IUpdateStrategy {
         }
         context.setLocation(new Point2D.Double(locX, locY));
         // assume fixed location is always two radius distance below the center point in Y direction
-        System.out.println(locX + " " + locY);
         return new Point2D.Double(locX, locY + 2 * r);
     }
 
@@ -134,17 +133,20 @@ public class RotatingStrategy implements IUpdateStrategy {
             this.idToBool.replace(context.getID(), true);
         }
 
+        double angle = this.rotateAngle;
+        if (context instanceof Fish) {
+            angle *= -Math.signum(((Fish) context).getScale());
+        }
         Point2D.Double loc = this.idToLoc.get(context.getID());
         double dx = context.getLocation().x - loc.x;
         double dy = context.getLocation().y - loc.y;
-        double rotatedX = Math.cos(rotateAngle) * (dx) - Math.sin(rotateAngle) * (dy) + loc.x;
-        double rotatedY = Math.sin(rotateAngle) * (dx) + Math.cos(rotateAngle) * (dy) + loc.y;
+        double rotatedX = Math.cos(angle) * (dx) - Math.sin(angle) * (dy) + loc.x;
+        double rotatedY = Math.sin(angle) * (dx) + Math.cos(angle) * (dy) + loc.y;
         context.setLocation(new Point2D.Double(rotatedX, rotatedY));
-
 
         if (context instanceof Fish) {
             Fish fish = (Fish) context;
-            fish.setAngel(fish.getAngel() + this.rotateAngle);
+            fish.setAngle(fish.getAngle() + angle);
         }
         context.incrementCount();
         return false;

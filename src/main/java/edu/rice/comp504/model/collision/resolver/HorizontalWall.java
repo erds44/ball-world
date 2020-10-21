@@ -1,15 +1,14 @@
-package edu.rice.comp504.model.collision;
+package edu.rice.comp504.model.collision.resolver;
 
 import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.strategy.Strategy;
 
-public class HorizontalWall implements ICollisionHandler {
-    private static ICollisionHandler singleton;
+public class HorizontalWall implements ICollisionResolution {
+    private static ICollisionResolution singleton;
 
     private HorizontalWall() {
     }
 
-    public static ICollisionHandler makeOnly() {
+    public static ICollisionResolution makeOnly() {
         if (singleton == null) {
             singleton = new HorizontalWall();
         }
@@ -17,7 +16,7 @@ public class HorizontalWall implements ICollisionHandler {
     }
 
     @Override
-    public void handleCollision(APaintObj a, APaintObj b) {
+    public void resolveCollision(APaintObj a, APaintObj b) {
         a.getStrategy().updateState(a);
 
         a.bounceOffHorizontalWall();

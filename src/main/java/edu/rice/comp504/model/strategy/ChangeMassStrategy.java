@@ -1,7 +1,7 @@
 package edu.rice.comp504.model.strategy;
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 /**
  * Change the mass of a ball if there is a collision.

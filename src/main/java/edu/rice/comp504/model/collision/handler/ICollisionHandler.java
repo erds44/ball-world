@@ -1,6 +1,6 @@
 package edu.rice.comp504.model.collision.handler;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 /**
  * ICollisionHandler determines what collision strategies to use.

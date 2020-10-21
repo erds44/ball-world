@@ -1,6 +1,6 @@
 package edu.rice.comp504.model.collision;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 /***************************************************************************************
  *    Title: MinPQ.java

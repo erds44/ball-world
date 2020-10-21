@@ -1,4 +1,4 @@
-package edu.rice.comp504.model.paintObj;
+package edu.rice.comp504.model.paintobj;
 
 import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
@@ -80,7 +80,7 @@ public class Fish implements APaintObj {
     /**
      * Set the object mass.
      *
-     * @param mass
+     * @param mass the mass
      */
 
     public void setMass(double mass) {
@@ -216,6 +216,8 @@ public class Fish implements APaintObj {
                     break;
                 case SUDDENSTOPSTRATEGY:
                     this.isStop = false;
+                    break;
+                default:
                     break;
             }
             this.strategy = strategy;

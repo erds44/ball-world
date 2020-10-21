@@ -1,7 +1,6 @@
 package edu.rice.comp504.model.cmd;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintobj.APaintObj;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
 
 public class SwitchCmd implements IBallObjCmd {

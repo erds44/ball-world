@@ -1,6 +1,6 @@
 package edu.rice.comp504.model.collision.resolver;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 /**
  * Stick changes the velocity of first object to the same as the second object.

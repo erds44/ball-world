@@ -1,4 +1,4 @@
-package edu.rice.comp504.model.paintObj;
+package edu.rice.comp504.model.paintobj;
 
 /**
  * enum for object name.

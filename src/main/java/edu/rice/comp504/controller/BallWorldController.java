@@ -2,8 +2,8 @@ package edu.rice.comp504.controller;
 
 import com.google.gson.Gson;
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintobj.APaintObj;
+
 
 import java.util.Collection;
 

@@ -1,7 +1,7 @@
 package edu.rice.comp504.model.strategy;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Fish;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Fish;
 
 /**
  * Fish can swing up and down.

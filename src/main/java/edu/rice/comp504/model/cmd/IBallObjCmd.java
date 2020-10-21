@@ -1,6 +1,6 @@
 package edu.rice.comp504.model.cmd;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 
 /**

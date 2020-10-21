@@ -1,4 +1,4 @@
-package edu.rice.comp504.model.paintObj;
+package edu.rice.comp504.model.paintobj;
 
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
 
@@ -75,7 +75,7 @@ public interface APaintObj {
     /**
      * Set the object mass.
      *
-     * @param mass
+     * @param mass the mass
      */
     void setMass(double mass);
 

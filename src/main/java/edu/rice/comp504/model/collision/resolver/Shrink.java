@@ -1,7 +1,7 @@
 package edu.rice.comp504.model.collision.resolver;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Ball;
 
 /**
  * Shrink decreases the radius of both objects with min threshold.

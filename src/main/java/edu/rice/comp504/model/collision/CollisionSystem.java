@@ -5,9 +5,9 @@ import edu.rice.comp504.model.collision.handler.FishCollisionHandler;
 import edu.rice.comp504.model.collision.handler.ICollisionHandler;
 import edu.rice.comp504.model.collision.resolver.HorizontalWall;
 import edu.rice.comp504.model.collision.resolver.VerticalWall;
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Fish;
-import edu.rice.comp504.model.paintObj.Object;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Fish;
+import edu.rice.comp504.model.paintobj.Object;
 import edu.rice.comp504.model.strategy.Strategy;
 
 import java.util.*;

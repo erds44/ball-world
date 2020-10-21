@@ -1,8 +1,6 @@
 package edu.rice.comp504.model.strategy;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
-
-import java.awt.geom.Point2D;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 /**
  * Straight strategy that makes a object move straight.

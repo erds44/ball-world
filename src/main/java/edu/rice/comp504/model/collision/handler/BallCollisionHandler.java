@@ -1,7 +1,7 @@
 package edu.rice.comp504.model.collision.handler;
 
 import edu.rice.comp504.model.collision.resolver.*;
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 import edu.rice.comp504.model.strategy.Strategy;
 
 import java.util.HashMap;

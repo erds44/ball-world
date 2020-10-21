@@ -1,7 +1,7 @@
 package edu.rice.comp504.model.collision.resolver;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Ball;
 
 /**
  * ChangeColorOnRadius changes one object's color to the other one with the larger radius.

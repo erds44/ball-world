@@ -1,10 +1,8 @@
 package edu.rice.comp504.model.strategy;
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Fish;
-
-import java.awt.geom.Point2D;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Fish;
 
 /**
  * Object has a chance to stop moving.

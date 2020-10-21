@@ -1,7 +1,7 @@
 package edu.rice.comp504.model.strategy;
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.paintObj.APaintObj;
+import edu.rice.comp504.model.paintobj.APaintObj;
 
 import java.awt.geom.Point2D;
 
@@ -62,6 +62,8 @@ public class RandomWalkStrategy implements IUpdateStrategy {
                 break;
             case 4:
                 context.setVelocity(new Point2D.Double(0, 5));
+                break;
+            default:
                 break;
         }
         return true;

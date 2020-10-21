@@ -1,4 +1,4 @@
-package edu.rice.comp504.model.paintObj;
+package edu.rice.comp504.model.paintobj;
 
 import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.strategy.IUpdateStrategy;
@@ -162,7 +162,7 @@ public class Ball implements APaintObj {
     /**
      * Set the object mass.
      *
-     * @param mass
+     * @param mass the mass
      */
     public void setMass(double mass) {
         this.mass = mass;

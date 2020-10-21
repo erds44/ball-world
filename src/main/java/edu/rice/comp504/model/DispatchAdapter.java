@@ -1,10 +1,10 @@
 package edu.rice.comp504.model;
 
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Ball;
 import edu.rice.comp504.model.cmd.SwitchCmd;
 import edu.rice.comp504.model.collision.CollisionSystem;
-import edu.rice.comp504.model.paintObj.Fish;
+import edu.rice.comp504.model.paintobj.Fish;
 import edu.rice.comp504.model.strategy.*;
 
 import java.awt.*;
@@ -66,11 +66,7 @@ public class DispatchAdapter {
      * Load the APaintObj.
      *
      * @param body the request body
-     * @return
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
+     * @return the object
      */
 
     public APaintObj loadAPaintObj(String body) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -114,7 +110,7 @@ public class DispatchAdapter {
     }
 
     /**
-     * Help method load a ball
+     * Help method load a ball.
      *
      * @param switchable is switchable
      * @param strategy   strategy

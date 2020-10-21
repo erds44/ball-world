@@ -1,9 +1,9 @@
 package edu.rice.comp504.model.strategy;
 
 import edu.rice.comp504.model.DispatchAdapter;
-import edu.rice.comp504.model.paintObj.APaintObj;
-import edu.rice.comp504.model.paintObj.Ball;
-import edu.rice.comp504.model.paintObj.Fish;
+import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Ball;
+import edu.rice.comp504.model.paintobj.Fish;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;

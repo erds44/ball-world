@@ -4,7 +4,7 @@
 var app;
 
 var img = new Image();
-img.src = 'https://freesvg.org/img/CartoonFish.png';
+// img.src = 'https://freesvg.org/img/CartoonFish.png';
 
 //id of current interval
 let intervalID;
@@ -98,6 +98,7 @@ function createApp(canvas) {
 window.onload = function () {
     app = createApp(document.querySelector("canvas"));
     canvasDims();
+    fishURL();
     setUpdateFreq();
     initializeMap();
     setUpUI();
@@ -116,6 +117,15 @@ window.onbeforeunload = function () {
  */
 function canvasDims() {
     $.post("/canvas/dims", {height: app.dims.height, width: app.dims.width});
+}
+
+/**
+ * Set what fish img to use
+ */
+function fishURL() {
+    $.get("/fishURL", function (data) {
+        img.src = data
+    }, "json");
 }
 
 /**

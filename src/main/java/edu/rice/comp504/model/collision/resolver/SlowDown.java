@@ -54,7 +54,7 @@ public class SlowDown implements ICollisionResolution {
      */
 
     private double decrementVelocity(double vel) {
-        if (Math.abs(vel) > (this.threshold + this.decrement)) {
+        if (Math.abs(vel) >= this.threshold) {
             vel -= Math.signum(vel) * this.decrement;
         }
         return vel;

@@ -57,7 +57,7 @@ public class ReverseVelocityStrategy implements IUpdateStrategy {
      * @param context fish
      */
 
-    public void adjustFishLoc(Fish context) {
+    private void adjustFishLoc(Fish context) {
         double locX = context.getLocation().x;
         double locY = context.getLocation().y;
         int xBound = DispatchAdapter.getCanvasDims().x;

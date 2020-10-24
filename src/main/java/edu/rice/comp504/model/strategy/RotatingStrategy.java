@@ -70,7 +70,7 @@ public class RotatingStrategy implements IUpdateStrategy {
      * @param context The fish
      * @return Fixed location
      */
-    public Point2D.Double adjustFishLoc(Fish context) {
+    private Point2D.Double adjustFishLoc(Fish context) {
         double locX = context.getLocation().x;
         double locY = context.getLocation().y;
         int xBound = DispatchAdapter.getCanvasDims().x;

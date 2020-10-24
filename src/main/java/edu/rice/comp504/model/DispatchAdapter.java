@@ -72,18 +72,9 @@ public class DispatchAdapter {
     public APaintObj loadAPaintObj(String body) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         parseBody(body);
         String strategy = this.parseMap.get("strategy");
-        APaintObj obj;
-        IUpdateStrategy s = map.get(strategy);
         boolean b = Boolean.parseBoolean(this.parseMap.get("switchable"));
-        if (s == null) {    // In case a strategy is not in the dictionary
-            try {
-                Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
-                Constructor c = name.getConstructor();
-                s = (IUpdateStrategy) c.newInstance();
-            } catch (ClassNotFoundException e) {
-                s = NullStrategy.makeStrategy();
-            }
-        }
+        IUpdateStrategy s = getStrategy(strategy);
+        APaintObj obj;
         if (this.parseMap.get("object").equals("Fish")) {
             obj = loadFish(b, s);
         } else {
@@ -159,16 +150,7 @@ public class DispatchAdapter {
         parseBody(body);
         String strategy = this.parseMap.get("strategy");
         String id = this.parseMap.get("id");
-        IUpdateStrategy s = map.get(strategy);
-        if (s == null) {    // In case a strategy is not in the dictionary
-            try {
-                Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
-                Constructor c = name.getConstructor();
-                s = (IUpdateStrategy) c.newInstance();
-            } catch (ClassNotFoundException e) {
-                s = NullStrategy.makeStrategy();
-            }
-        }
+        IUpdateStrategy s = getStrategy(strategy);
         APaintObj obj = this.objs.get(Integer.parseInt(id));
         new SwitchCmd(s).execute(obj);
         CollisionSystem.makeOnly().predict(this.objs.values(), obj);
@@ -188,11 +170,11 @@ public class DispatchAdapter {
     }
 
     /**
-     * Remove all or particular ball.
+     * Remove all or particular object.
      *
      * @param body the request body
      */
-    public void removeBalls(String body) {
+    public void removeObject(String body) {
         parseBody(body);
         String num = this.parseMap.get("id");
         int id = Integer.parseInt(num);
@@ -222,6 +204,46 @@ public class DispatchAdapter {
             String value = param.split("=")[1];
             this.parseMap.put(name, value);
         }
+    }
+
+    /**
+     * Test loading fish method.
+     * @param strategy strategy
+     * @param switchable isSwitchable
+     * @param loc location of fish
+     * @param vel velocity of fish
+     */
+    public void testLoadFish(String strategy, boolean switchable, Point2D.Double loc, Point2D.Double vel) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Fish fish = new Fish(loc, vel, switchable, getStrategy(strategy), ++this.objID);
+        this.newObjs.put(fish.getID(), fish);
+    }
+
+    public Ball testLoadBall(String strategy, boolean switchable, Point2D.Double loc, Point2D.Double vel) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        int r = getRnd(15, 10);
+        int colorIndex = getRnd(0, availColors.length);
+        Ball ball = new Ball(loc, r, vel, availColors[colorIndex], switchable, getStrategy(strategy), ++this.objID);
+        this.newObjs.put(ball.getID(), ball);
+        return ball;
+    }
+    /**
+     * Help method to get a strategy.
+     *
+     * @param strategy String name of a strategy
+     * @return the expected strategy
+     */
+
+    private IUpdateStrategy getStrategy(String strategy) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        IUpdateStrategy s = map.get(strategy);
+        if (s == null) {    // In case a strategy is not in the dictionary
+            try {
+                Class name = Class.forName("edu.rice.comp504.model.strategy." + strategy);
+                Constructor c = name.getConstructor();
+                s = (IUpdateStrategy) c.newInstance();
+            } catch (ClassNotFoundException e) {
+                s = NullStrategy.makeStrategy();
+            }
+        }
+        return s;
     }
 
 }

@@ -25,6 +25,7 @@ public class Fish implements APaintObj {
     private double mass;
     private double angle;
     private boolean isStop;
+    public static String URL = "https://freesvg.org/img/CartoonFish.png";
 
     /**
      * Constructor.

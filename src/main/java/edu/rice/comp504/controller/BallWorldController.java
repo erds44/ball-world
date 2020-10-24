@@ -3,6 +3,7 @@ package edu.rice.comp504.controller;
 import com.google.gson.Gson;
 import edu.rice.comp504.model.DispatchAdapter;
 import edu.rice.comp504.model.paintobj.APaintObj;
+import edu.rice.comp504.model.paintobj.Fish;
 
 
 import java.util.Collection;
@@ -52,8 +53,10 @@ public class BallWorldController {
             return gson.toJson(dis);
         });
 
+        get("/fishURL", (request, response) -> gson.toJson(Fish.URL));
+
         post("/clear", (request, response) -> {
-            dis.removeBalls(request.body());
+            dis.removeObject(request.body());
             return gson.toJson("remove");
         });
 

@@ -53,7 +53,7 @@ public class SpeedUp implements ICollisionResolution {
      * @return the increased velocity
      */
     private double incrementVelocity(double vel) {
-        if (Math.abs(vel) < (this.threshold - this.increment)) {
+        if (Math.abs(vel) < this.threshold) {
             vel += Math.signum(vel) * this.increment;
         }
         return vel;

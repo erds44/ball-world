@@ -45,8 +45,8 @@ public class Absorb implements ICollisionResolution {
         int ra = ballA.getRadius();
         int rb = ballB.getRadius();
         if (ra > minThreshold && ra < maxThreshold && rb > minThreshold && rb < maxThreshold) {
-            ra += rb * 0.1;
-            rb *= 0.9;
+            ra += rb * 0.5;
+            rb *= 0.5;
         }
         ballA.setRadius(ra);
         ballB.setRadius(rb);

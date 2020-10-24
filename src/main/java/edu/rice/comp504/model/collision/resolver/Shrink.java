@@ -52,7 +52,7 @@ public class Shrink implements ICollisionResolution {
     private void shrinkSize(APaintObj a) {
         Ball ball = (Ball) a;
         int ra = ball.getRadius();
-        if (ra >= (this.threshold + this.shrink)) {
+        if (ra >= this.threshold) {
             ball.setRadius(ra - this.shrink);
         }
     }

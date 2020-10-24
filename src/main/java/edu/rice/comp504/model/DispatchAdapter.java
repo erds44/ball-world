@@ -218,6 +218,13 @@ public class DispatchAdapter {
         this.newObjs.put(fish.getID(), fish);
     }
 
+    /**
+     * Test loading ball method.
+     * @param strategy strategy
+     * @param switchable isSwitchable
+     * @param loc location
+     * @param vel velocity
+     */
     public Ball testLoadBall(String strategy, boolean switchable, Point2D.Double loc, Point2D.Double vel) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         int r = getRnd(15, 10);
         int colorIndex = getRnd(0, availColors.length);

@@ -33,7 +33,7 @@ public class DispatchAdapterTest extends TestCase {
     }
 
     /**
-     * Test fish properly change direction when hitting a wall
+     * Test fish properly change direction when hitting a wall.
      */
     public void testFishCollision() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         for (int i = 0; i < 2; i++) {
@@ -195,7 +195,7 @@ public class DispatchAdapterTest extends TestCase {
 
 
     /**
-     * Test switch strategies should cause a switchable ball to switch to the expected strategy
+     * Test switch strategies should cause a switchable ball to switch to the expected strategy.
      */
     public void testSwitchBall() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         for (String strategy : this.ballStrategy) {
@@ -213,7 +213,7 @@ public class DispatchAdapterTest extends TestCase {
     }
 
     /**
-     * Test switch strategies should cause a switchable fish to switch to the expected strategy
+     * Test switch strategies should cause a switchable fish to switch to the expected strategy.
      */
     public void testSwitchFish() throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         for (String strategy : this.fishStrategy) {

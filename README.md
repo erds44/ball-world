@@ -1,4 +1,4 @@
-## ZY43  https://zy43-hw4-collision-world.herokuapp.com/  (3 Slip Days)  
+## ZY43  https://zy43-hw4-collision-world.herokuapp.com/
 Design Decisions:  
 * Remove pcs in DispachAdapter:  
 replace pcs with a map with obejct id as key and object as value to avoid type casting and better incorperate with collision system  
